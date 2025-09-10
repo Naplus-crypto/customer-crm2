@@ -1,4 +1,4 @@
-# customer-crm2
+# Customer CRM (CSV)
 **โครงสร้างโปรเจค**
 ```
 customer_crm/
