@@ -22,3 +22,21 @@ customer_crm/
     ├── test_unit.c       # Unit tests สำหรับทุกฟังก์ชัน
     └── test_e2e.c        # E2E test จำลองการใช้งานจริง
 ```
+
+***CLI (ตัวอย่าง)***
+```
+==== Customer CRM ===
+1) List all
+2) Add
+3) Search
+4) Update field
+5) Delete
+6) Exit
+Choose [1-6]: 3
+Search by company/contact: Tech
+
+CompanyName    | ContactPerson | PhoneNumber | Email
+--------------------------------------------------------
+Tech Solutions | John Doe      | 555-1234    | john@techsol.com
+
+```
