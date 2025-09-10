@@ -15,7 +15,7 @@
 
 **โครงสร้างไฟล์ CSV**
 - มี 4 column: CompanyName, ContactPerson, PhoneNumber, Email
-- ไฟล์ CSV มีข้อมูลอย่างน้อย 15 รายการ (ดู `data/customers.csv`)
+- ไฟล์ CSV ต้องมีข้อมูลอย่างน้อย 15 รายการ (ดู `data/customers.csv`)
 
 **โครงสร้างโปรเจค**
 ```
