@@ -6,8 +6,15 @@
 - เมนูแสดงผลใช้งานผ่าน CLI (display_menu)
 - ไฟล์ CSV มีข้อมูลอย่างน้อย 15 รายการ (ดู `data/customers.csv`)
 
-**โครงสร้างไฟล์ CSV**
+**ฟังก์ชันหลักใน customer_manager.py**
+- open_file() → เปิด/โหลดไฟล์ CSV
+- add_user() → เพิ่มข้อมูลลูกค้าใหม่
+- search_user() → ค้นหาจากชื่อบริษัทหรือผู้ติดต่อ
+- edit_user() → อัพเดทข้อมูล (เช่น เบอร์โทรศัพท์)
+- delete_user() → ลบลูกค้า
+- display_menu() → แสดงเมนู CLI ให้ผู้ใช้เลือก
 
+**โครงสร้างไฟล์ CSV**
 - มี 4 column: CompanyName, ContactPerson, PhoneNumber, Email
 - ต้องมีข้อมูล ≥15 แถว (เช่น Tech Solutions, John Doe, …)
 
@@ -29,7 +36,7 @@ customer_crm/
 1) List all
 2) Add
 3) Search
-4) Update field
+4) Update
 5) Delete
 6) Exit
 Choose [1-6]: 3
