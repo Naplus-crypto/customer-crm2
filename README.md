@@ -23,7 +23,7 @@ customer_crm/
     └── test_e2e.c        # E2E test จำลองการใช้งานจริง
 ```
 
-***CLI (ตัวอย่าง)***
+**CLI (ตัวอย่าง)**
 ```
 ==== Customer CRM ===
 1) List all
