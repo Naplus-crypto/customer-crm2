@@ -3,7 +3,7 @@
 ```
 customer_crm/
 ├── customer_manager      # ฟังก์ชันหลักทั้งหมด
-├── main                  # จุดเริ่มโปรแกรม
+├── main                  # จุดรันโปรแกรม
 ├── data/
 │   └── customers.csv     # ไฟล์ข้อมูลตัวอย่าง (>= 15 แถว)
 └── tests/
