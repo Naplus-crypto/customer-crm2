@@ -8,8 +8,8 @@
 
 **โครงสร้างไฟล์ CSV**
 
-มี 4 column: CompanyName, ContactPerson, PhoneNumber, Email
-ต้องมีข้อมูล ≥15 แถว (เช่น Tech Solutions, John Doe, …)
+- มี 4 column: CompanyName, ContactPerson, PhoneNumber, Email
+- ต้องมีข้อมูล ≥15 แถว (เช่น Tech Solutions, John Doe, …)
 
 **โครงสร้างโปรเจค**
 ```
