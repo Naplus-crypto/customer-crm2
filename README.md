@@ -2,11 +2,11 @@
 **โครงสร้างโปรเจค**
 ```
 customer_crm/
-├── customer_manager      # ฟังก์ชันหลักทั้งหมด
-├── main                  # จุดรันโปรแกรม
+├── customer_manager.c    # ฟังก์ชันหลักทั้งหมด
+├── main.c                # จุดรันโปรแกรม
 ├── data/
 │   └── customers.csv     # ไฟล์ข้อมูลตัวอย่าง (>= 15 แถว)
 └── tests/
-    ├── test_unit         # Unit tests สำหรับทุกฟังก์ชัน
-    └── test_e2e          # E2E test จำลองการใช้งานจริง
+    ├── test_unit.c       # Unit tests สำหรับทุกฟังก์ชัน
+    └── test_e2e.c        # E2E test จำลองการใช้งานจริง
 ```
