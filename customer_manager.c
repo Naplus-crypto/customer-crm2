@@ -5,12 +5,12 @@ Customer CRM with CSV storage.
 Columns: CompanyName, ContactPerson, PhoneNumber, Email
 
 Public API (required by assignment):
-- open_file(path) -> list[dict]
-- add_user(path, company, contact, phone, email) -> dict (added row)
-- edit_user(path, identifier, field, new_value) -> int (rows updated)
-- delete_user(path, identifier) -> int (rows deleted)
-- search_user(path, query) -> list[dict]
-- display_menu(path) -> None (interactive CLI)
+- open_file
+- add_user
+- edit_user
+- search_user
+- delete_user
+- display_menu
 
 Notes:
 - 'identifier' can be company name or contact person (case-insensitive, partial ok).
