@@ -126,7 +126,7 @@ Rocket Co    | Rita Ray      | 0890000000   | rita@rocket.io
 ```
 หมายเหตุ: ถ้าใส่ค่าใหม่ไม่ถูกต้อง (เช่น เบอร์สั้นเกิน, อีเมลไม่ถูก) จะขึ้น error
 
-**5) Delete — ลบข้อมูลลูกค้าที่แมตช์ identifier**
+**5) Delete — ลบข้อมูลลูกค้าที่แมตช์กับ identifier**
 ```
 Choose [1-6]: 5
 Identifier to delete (company/contact/phone/email): rocket
