@@ -29,7 +29,6 @@ customer_crm/
 - มี 4 column: CompanyName, ContactPerson, PhoneNumber, Email
 - ไฟล์ CSV ต้องมีข้อมูลอย่างน้อย 15 รายการ (ดู `data/customers.csv`)
 
-
 **ตัวอย่างการใช้งาน CLI**
 
 **0) เริ่มรันโปรแกรม จะเห็นเมนู:**
