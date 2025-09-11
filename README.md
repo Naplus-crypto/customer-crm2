@@ -5,7 +5,7 @@
 - เพิ่ม (add), ค้นหา (search), อัพเดต (update), ลบ (delete)
 - เมนูแสดงผลการใช้งานผ่าน CLI (display_menu)
 
-**ฟังก์ชันหลักใน customer_manager.py**
+**ฟังก์ชันหลักใน customer_manager.c**
 - open_file() → เปิด/โหลดไฟล์ CSV
 - add_user() → เพิ่มข้อมูลลูกค้าใหม่
 - search_user() → ค้นหาจากชื่อบริษัทหรือผู้ติดต่อ
