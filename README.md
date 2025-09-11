@@ -136,6 +136,11 @@ Deleted 1 record(s).
 ลอง List เพื่อยืนยัน:
 ```
 Choose [1-6]: 1
+
+CompanyName     | ContactPerson | PhoneNumber  | Email
+---------------------------------------------------------------
+Tech Solutions  | John Doe      | 555-1234     | john@techsol.com
+Business Corp   | Jane Smith    | 555-5678     | jane@businesscorp.com
 ... (ไม่มี Rocket Co แล้ว)
 ```
 **6) Exit — ออกจากโปรแกรม**
