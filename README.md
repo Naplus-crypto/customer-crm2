@@ -5,18 +5,6 @@
 - เพิ่ม (add), ค้นหา (search), อัพเดต (update), ลบ (delete)
 - เมนูแสดงผลการใช้งานผ่าน CLI (display_menu)
 
-**ฟังก์ชันหลักใน customer_manager.c**
-- open_file() → เปิด/โหลดไฟล์ CSV
-- add_user() → เพิ่มข้อมูลลูกค้าใหม่
-- search_user() → ค้นหาจากชื่อบริษัทหรือผู้ติดต่อ
-- edit_user() → อัพเดทข้อมูลลูกค้า (เช่น เปลี่ยนแปลงเบอร์โทรศัพท์)
-- delete_user() → ลบข้อมูลลูกค้า
-- display_menu() → แสดงเมนู CLI ให้ผู้ใช้เลือก
-
-**โครงสร้างไฟล์ CSV**
-- มี 4 column: CompanyName, ContactPerson, PhoneNumber, Email
-- ไฟล์ CSV ต้องมีข้อมูลอย่างน้อย 15 รายการ (ดู `data/customers.csv`)
-
 **โครงสร้างโปรเจค**
 ```
 customer_crm/
@@ -28,6 +16,18 @@ customer_crm/
     ├── test_unit.c       # Unit tests สำหรับทุกฟังก์ชัน
     └── test_e2e.c        # E2E test จำลองการใช้งานจริง
 ```
+
+**ฟังก์ชันหลักใน customer_manager.c**
+- open_file() → เปิด/โหลดไฟล์ CSV
+- add_user() → เพิ่มข้อมูลลูกค้าใหม่
+- search_user() → ค้นหาจากชื่อบริษัทหรือผู้ติดต่อ
+- edit_user() → อัพเดทข้อมูลลูกค้า (เช่น เปลี่ยนแปลงเบอร์โทรศัพท์)
+- delete_user() → ลบข้อมูลลูกค้า
+- display_menu() → แสดงเมนู CLI ให้ผู้ใช้เลือก
+
+**โครงสร้างไฟล์ CSV**
+- มี 4 column: CompanyName, ContactPerson, PhoneNumber, Email
+- ไฟล์ CSV ต้องมีข้อมูลอย่างน้อย 15 รายการ (ดู `data/customers.csv`)
 
 **ตัวอย่างการใช้งาน CLI**
 
