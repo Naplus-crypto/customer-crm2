@@ -17,3 +17,4 @@ Notes:
 - All operations preserve header order and write atomically.
 - Phone and email are validated lightly to reduce obvious mistakes.
 """
+#include <stdio.h>
