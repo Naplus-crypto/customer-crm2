@@ -3,7 +3,7 @@
 **ฟีเจอร์หลัก**
 - บันทึก/อ่านข้อมูลลูกค้าจาก CSV (CompanyName, ContactPerson, PhoneNumber, Email)
 - เพิ่ม (add), ค้นหา (search), อัพเดต (update), ลบ (delete)
-- เมนูแสดงผลใช้งานผ่าน CLI (display_menu)
+- เมนูแสดงผลการใช้งานผ่าน CLI (display_menu)
 
 **ฟังก์ชันหลักใน customer_manager.py**
 - open_file() → เปิด/โหลดไฟล์ CSV
