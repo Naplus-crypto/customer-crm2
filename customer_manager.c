@@ -190,7 +190,9 @@ void display_menu(void){
         puts("4) Update field");
         puts("5) Delete");
         puts("6) Exit");
-        printf("Choose [1-6]: ");
+        puts("7) Run Unit Test");
+        puts("8) Run E2E Test");
+        printf("Choose [1-8]: ");
         if(!fgets(line,sizeof(line),stdin)) return;
         choice = atoi(line);
         if(choice==1) list_users();
@@ -199,6 +201,21 @@ void display_menu(void){
         else if(choice==4) edit_user();
         else if(choice==5) delete_user();
         else if(choice==6){ puts("Bye!"); break; }
+        else if(choice==7) run_unit_test();
+        else if(choice==8) run_e2e_test();
         else puts("Invalid choice.");
     }
+}
+void run_unit_test(void){
+    printf("Running unit tests...\n");
+    system("gcc -std=c11 -O2 -Wall -Wextra -pedantic tests/test_unit.c -o tests/test_unit && ./tests/test_unit");
+}
+
+void run_e2e_test(void){
+    printf("Running E2E test...\n");
+    system("./crm < tests/e2e_input.txt > tests/e2e_output.txt");
+    system("grep -q \"Added.\" tests/e2e_output.txt && echo \"[E2E] Add OK\" || echo \"[E2E] Add FAIL\"");
+    system("grep -q \"Updated\" tests/e2e_output.txt && echo \"[E2E] Update OK\" || echo \"[E2E] Update FAIL\"");
+    system("grep -q \"Deleted\" tests/e2e_output.txt && echo \"[E2E] Delete OK\" || echo \"[E2E] Delete FAIL\"");
+    system("grep -q \"Bye!\" tests/e2e_output.txt && echo \"[E2E] Exit OK\" || echo \"[E2E] Exit FAIL\"");
 }
