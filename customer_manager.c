@@ -2,9 +2,10 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <ctype.h>
 
-#define MAX_ROWS 4096
-#define MAX_STR  128
+#define MAX_ROWS  4096
+#define MAX_STR   128
 #define MAX_PHONE 64
 
 typedef struct {
@@ -30,14 +31,35 @@ void add_user(void);
 void search_user(void);
 void edit_user(void);
 void delete_user(void);
-void run_unit_test(void);  /* เรียกคอมไพล์/รัน tests/test_unit.c */
+void run_unit_test(void);  /* คอมไพล์/รัน tests/test_unit.c */
 void run_e2e_test(void);   /* รัน ./crm ด้วย tests/e2e_input.txt */
-void set_data_path(const char *path);
+void set_data_path(const char *path); /* ใช้ใน unit test */
 
 /* -------- utils -------- */
 static void rstrip(char *s){
     size_t n = strlen(s);
-    while(n && (s[n-1]=='\n' || s[n-1]=='\r')) s[--n]='\0';
+    while (n && (s[n-1]=='\n' || s[n-1]=='\r')) s[--n]='\0';
+}
+
+/* -------- Validation (พื้นฐาน) -------- */
+/* Email: ต้องมี '@' ก่อน '.' และไม่ได้จบด้วย '.' */
+static bool valid_email(const char* s){
+    if (!s || !*s) return false;
+    if (strchr(s, ' ')) return false;           /* ไม่เอา space */
+    const char* at = strchr(s, '@');
+    if (!at || at==s) return false;             /* ซ้าย @ ห้ามว่าง */
+    const char* dot = strrchr(s, '.');
+    if (!dot || dot <= at) return false;        /* ต้องมีจุดหลัง @ */
+    if (*(dot+1) == '\0') return false;         /* ห้ามจบด้วยจุด */
+    return true;
+}
+/* Phone: ตัวเลขล้วน ความยาว 9–15 หลัก */
+static bool valid_phone(const char* s){
+    if (!s) return false;
+    size_t n = strlen(s);
+    if (n < 9 || n > 15) return false;
+    for (size_t i=0;i<n;i++) if (!isdigit((unsigned char)s[i])) return false;
+    return true;
 }
 
 /* -------- CSV I/O -------- */
@@ -64,7 +86,7 @@ static void load_csv(void){
     if (!fgets(line, sizeof(line), f)){ fclose(f); return; } /* header */
     while (fgets(line, sizeof(line), f) && db.count < MAX_ROWS){
         rstrip(line);
-        if(line[0]=='\0') continue;
+        if (line[0]=='\0') continue;
         char *tok = strtok(line, ",");
         Customer c = {{0}};
         if(tok){ strncpy(c.company, tok, MAX_STR-1); }
@@ -106,8 +128,12 @@ void add_user(void){
     char buf[256];
     printf("CompanyName: ");    if(!fgets(buf,sizeof(buf),stdin)) return; rstrip(buf); strncpy(c.company, buf, MAX_STR-1);
     printf("ContactPerson: ");  if(!fgets(buf,sizeof(buf),stdin)) return; rstrip(buf); strncpy(c.contact, buf, MAX_STR-1);
-    printf("PhoneNumber: ");    if(!fgets(buf,sizeof(buf),stdin)) return; rstrip(buf); strncpy(c.phone,   buf, MAX_PHONE-1);
-    printf("Email: ");          if(!fgets(buf,sizeof(buf),stdin)) return; rstrip(buf); strncpy(c.email,   buf, MAX_STR-1);
+    printf("PhoneNumber: ");    if(!fgets(buf,sizeof(buf),stdin)) return; rstrip(buf);
+    if(!valid_phone(buf)){ puts("Invalid phone."); return; }
+    strncpy(c.phone, buf, MAX_PHONE-1);
+    printf("Email: ");          if(!fgets(buf,sizeof(buf),stdin)) return; rstrip(buf);
+    if(!valid_email(buf)){ puts("Invalid email."); return; }
+    strncpy(c.email, buf, MAX_STR-1);
 
     if (db.count < MAX_ROWS){
         db.items[db.count++] = c;
@@ -154,8 +180,14 @@ void edit_user(void){
             strstr(p->phone,ident)   || strstr(p->email,ident)){
             if(strcmp(field,"CompanyName")==0) strncpy(p->company,value,MAX_STR-1);
             else if(strcmp(field,"ContactPerson")==0) strncpy(p->contact,value,MAX_STR-1);
-            else if(strcmp(field,"PhoneNumber")==0)   strncpy(p->phone,value,MAX_PHONE-1);
-            else if(strcmp(field,"Email")==0)         strncpy(p->email,value,MAX_STR-1);
+            else if(strcmp(field,"PhoneNumber")==0){
+                if(!valid_phone(value)){ puts("Invalid phone."); continue; }
+                strncpy(p->phone,value,MAX_PHONE-1);
+            }
+            else if(strcmp(field,"Email")==0){
+                if(!valid_email(value)){ puts("Invalid email."); continue; }
+                strncpy(p->email,value,MAX_STR-1);
+            }
             else { puts("Unknown field."); continue; }
             updated++;
         }
@@ -184,7 +216,7 @@ void delete_user(void){
 void run_unit_test(void){
     printf("Running unit tests...\n");
     int rc = system("gcc -std=c11 -O2 -Wall -Wextra -pedantic tests/test_unit.c -o tests/test_unit && ./tests/test_unit");
-    if (rc != 0) puts("Unit test failed to run. Check tests/test_unit.c/path.");
+    if (rc != 0) puts("Unit test failed to run. Check tests/test_unit.c and paths.");
 }
 void run_e2e_test(void){
     printf("Running E2E test...\n");
