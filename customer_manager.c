@@ -31,9 +31,17 @@ void add_user(void);
 void search_user(void);
 void edit_user(void);
 void delete_user(void);
-void run_unit_test(void);  /* คอมไพล์/รัน tests/test_unit.c */
-void run_e2e_test(void);   /* รัน ./crm ด้วย tests/e2e_input.txt */
-void set_data_path(const char *path); /* ใช้ใน unit test */
+void run_unit_test(void);
+void run_e2e_test(void);
+void set_data_path(const char *path);
+
+/* -------- safe string copy (แก้ปัญหา truncation/ไม่มี '\0') -------- */
+static void safe_copy(char *dst, const char *src, size_t cap){
+    if (!dst || !cap) return;
+    if (!src) { dst[0] = '\0'; return; }
+    strncpy(dst, src, cap - 1);
+    dst[cap - 1] = '\0';
+}
 
 /* -------- utils -------- */
 static void rstrip(char *s){
@@ -41,19 +49,18 @@ static void rstrip(char *s){
     while (n && (s[n-1]=='\n' || s[n-1]=='\r')) s[--n]='\0';
 }
 
-/* -------- Validation (พื้นฐาน) -------- */
-/* Email: ต้องมี '@' ก่อน '.' และไม่ได้จบด้วย '.' */
+/* -------- Validation -------- */
 static bool valid_email(const char* s){
     if (!s || !*s) return false;
-    if (strchr(s, ' ')) return false;           /* ไม่เอา space */
+    if (strchr(s, ' ')) return false;
     const char* at = strchr(s, '@');
-    if (!at || at==s) return false;             /* ซ้าย @ ห้ามว่าง */
     const char* dot = strrchr(s, '.');
-    if (!dot || dot <= at) return false;        /* ต้องมีจุดหลัง @ */
-    if (*(dot+1) == '\0') return false;         /* ห้ามจบด้วยจุด */
+    if (!at || !dot) return false;
+    if (at == s) return false;          /* ซ้าย @ ห้ามว่าง */
+    if (dot <= at) return false;        /* ต้องมี . อยู่หลัง @ */
+    if (*(dot+1) == '\0') return false; /* ห้ามจบด้วย . */
     return true;
 }
-/* Phone: ตัวเลขล้วน ความยาว 9–15 หลัก */
 static bool valid_phone(const char* s){
     if (!s) return false;
     size_t n = strlen(s);
@@ -65,8 +72,7 @@ static bool valid_phone(const char* s){
 /* -------- CSV I/O -------- */
 void set_data_path(const char *path){
     if (!path) return;
-    strncpy(DATA_PATH, path, sizeof(DATA_PATH)-1);
-    DATA_PATH[sizeof(DATA_PATH)-1] = '\0';
+    safe_copy(DATA_PATH, path, sizeof(DATA_PATH));
 }
 
 static void ensure_csv_exists(void){
@@ -89,10 +95,10 @@ static void load_csv(void){
         if (line[0]=='\0') continue;
         char *tok = strtok(line, ",");
         Customer c = {{0}};
-        if(tok){ strncpy(c.company, tok, MAX_STR-1); }
-        tok = strtok(NULL, ","); if(tok){ strncpy(c.contact, tok, MAX_STR-1); }
-        tok = strtok(NULL, ","); if(tok){ strncpy(c.phone,   tok, MAX_PHONE-1); }
-        tok = strtok(NULL, ","); if(tok){ strncpy(c.email,   tok, MAX_STR-1); }
+        if(tok) safe_copy(c.company, tok, MAX_STR);
+        tok = strtok(NULL, ","); if(tok) safe_copy(c.contact, tok, MAX_STR);
+        tok = strtok(NULL, ","); if(tok) safe_copy(c.phone,   tok, MAX_PHONE);
+        tok = strtok(NULL, ","); if(tok) safe_copy(c.email,   tok, MAX_STR);
         db.items[db.count++] = c;
     }
     fclose(f);
@@ -126,14 +132,14 @@ void list_users(void){
 void add_user(void){
     Customer c = {{0}};
     char buf[256];
-    printf("CompanyName: ");    if(!fgets(buf,sizeof(buf),stdin)) return; rstrip(buf); strncpy(c.company, buf, MAX_STR-1);
-    printf("ContactPerson: ");  if(!fgets(buf,sizeof(buf),stdin)) return; rstrip(buf); strncpy(c.contact, buf, MAX_STR-1);
+    printf("CompanyName: ");    if(!fgets(buf,sizeof(buf),stdin)) return; rstrip(buf); safe_copy(c.company, buf, MAX_STR);
+    printf("ContactPerson: ");  if(!fgets(buf,sizeof(buf),stdin)) return; rstrip(buf); safe_copy(c.contact, buf, MAX_STR);
     printf("PhoneNumber: ");    if(!fgets(buf,sizeof(buf),stdin)) return; rstrip(buf);
     if(!valid_phone(buf)){ puts("Invalid phone."); return; }
-    strncpy(c.phone, buf, MAX_PHONE-1);
+    safe_copy(c.phone, buf, MAX_PHONE);
     printf("Email: ");          if(!fgets(buf,sizeof(buf),stdin)) return; rstrip(buf);
     if(!valid_email(buf)){ puts("Invalid email."); return; }
-    strncpy(c.email, buf, MAX_STR-1);
+    safe_copy(c.email, buf, MAX_STR);
 
     if (db.count < MAX_ROWS){
         db.items[db.count++] = c;
@@ -165,7 +171,7 @@ void search_user(void){
 }
 
 void edit_user(void){
-    char ident[128], field[32], value[128];
+    char ident[128], field[32], value[256];
     printf("Identifier to match: ");
     if(!fgets(ident,sizeof(ident),stdin)) return; rstrip(ident);
     printf("Field to update [CompanyName|ContactPerson|PhoneNumber|Email]: ");
@@ -178,15 +184,15 @@ void edit_user(void){
         Customer *p=&db.items[i];
         if (strstr(p->company,ident) || strstr(p->contact,ident) ||
             strstr(p->phone,ident)   || strstr(p->email,ident)){
-            if(strcmp(field,"CompanyName")==0) strncpy(p->company,value,MAX_STR-1);
-            else if(strcmp(field,"ContactPerson")==0) strncpy(p->contact,value,MAX_STR-1);
+            if(strcmp(field,"CompanyName")==0)      safe_copy(p->company, value, MAX_STR);
+            else if(strcmp(field,"ContactPerson")==0) safe_copy(p->contact, value, MAX_STR);
             else if(strcmp(field,"PhoneNumber")==0){
                 if(!valid_phone(value)){ puts("Invalid phone."); continue; }
-                strncpy(p->phone,value,MAX_PHONE-1);
+                safe_copy(p->phone, value, MAX_PHONE);
             }
             else if(strcmp(field,"Email")==0){
                 if(!valid_email(value)){ puts("Invalid email."); continue; }
-                strncpy(p->email,value,MAX_STR-1);
+                safe_copy(p->email, value, MAX_STR);
             }
             else { puts("Unknown field."); continue; }
             updated++;
