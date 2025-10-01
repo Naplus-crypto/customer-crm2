@@ -7,14 +7,16 @@
 
 **โครงสร้างโปรเจค**
 ```
-customer_crm/
-├── customer_manager.c    # ฟังก์ชันหลักทั้งหมด
-├── main.c                # จุดรันโปรแกรม
-├── data/
-│   └── customers.csv     # ไฟล์ข้อมูลตัวอย่าง (>= 15 แถว)
+customer-crm/
+├── customer_manager.c   # ฟังก์ชันหลัก CRUD + CSV
+├── main.c               # โปรแกรมหลัก + เมนู
+├── customers.csv        # ไฟล์ข้อมูลตัวอย่าง (>=15 records)
 └── tests/
-    ├── test_unit.c       # Unit tests สำหรับทุกฟังก์ชัน
-    └── test_e2e.c        # E2E test จำลองการใช้งานจริง
+    ├── test_unit.c      # Unit test (เรียกผ่านเมนู)
+    ├── test_e2e.c       # E2E test (เรียกผ่านเมนู)
+    ├── e2e_input.txt    # Input จำลองสำหรับ E2E
+    └── e2e_output.txt   # Output ที่ได้จาก E2E (สร้างตอนรัน)
+
 ```
 
 **ฟังก์ชันหลักใน customer_manager.c**
