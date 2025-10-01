@@ -19,16 +19,34 @@ typedef struct {
     int count;
 } CustomerDB;
 
+/* -------- global db & csv path -------- */
 static CustomerDB db;
 static char DATA_PATH[256] = "customers.csv";
 
-/* ===== Utils ===== */
+/* -------- prototypes (เรียกจาก main) -------- */
+void open_file(void);
+void list_users(void);
+void add_user(void);
+void search_user(void);
+void edit_user(void);
+void delete_user(void);
+void run_unit_test(void);  /* เรียกคอมไพล์/รัน tests/test_unit.c */
+void run_e2e_test(void);   /* รัน ./crm ด้วย tests/e2e_input.txt */
+void set_data_path(const char *path);
+
+/* -------- utils -------- */
 static void rstrip(char *s){
     size_t n = strlen(s);
     while(n && (s[n-1]=='\n' || s[n-1]=='\r')) s[--n]='\0';
 }
 
-/* ===== CSV I/O ===== */
+/* -------- CSV I/O -------- */
+void set_data_path(const char *path){
+    if (!path) return;
+    strncpy(DATA_PATH, path, sizeof(DATA_PATH)-1);
+    DATA_PATH[sizeof(DATA_PATH)-1] = '\0';
+}
+
 static void ensure_csv_exists(void){
     FILE *f = fopen(DATA_PATH, "r");
     if (f){ fclose(f); return; }
@@ -37,12 +55,13 @@ static void ensure_csv_exists(void){
     fprintf(f, "CompanyName,ContactPerson,PhoneNumber,Email\n");
     fclose(f);
 }
+
 static void load_csv(void){
     db.count = 0;
     FILE *f = fopen(DATA_PATH, "r");
     if (!f){ perror("open csv"); return; }
     char line[512];
-    if (!fgets(line, sizeof(line), f)){ fclose(f); return; } // skip header
+    if (!fgets(line, sizeof(line), f)){ fclose(f); return; } /* header */
     while (fgets(line, sizeof(line), f) && db.count < MAX_ROWS){
         rstrip(line);
         if(line[0]=='\0') continue;
@@ -50,12 +69,13 @@ static void load_csv(void){
         Customer c = {{0}};
         if(tok){ strncpy(c.company, tok, MAX_STR-1); }
         tok = strtok(NULL, ","); if(tok){ strncpy(c.contact, tok, MAX_STR-1); }
-        tok = strtok(NULL, ","); if(tok){ strncpy(c.phone, tok, MAX_PHONE-1); }
-        tok = strtok(NULL, ","); if(tok){ strncpy(c.email, tok, MAX_STR-1); }
+        tok = strtok(NULL, ","); if(tok){ strncpy(c.phone,   tok, MAX_PHONE-1); }
+        tok = strtok(NULL, ","); if(tok){ strncpy(c.email,   tok, MAX_STR-1); }
         db.items[db.count++] = c;
     }
     fclose(f);
 }
+
 static void save_csv(void){
     FILE *f = fopen(DATA_PATH, "w");
     if (!f){ perror("save csv"); return; }
@@ -68,7 +88,7 @@ static void save_csv(void){
     fclose(f);
 }
 
-/* ===== API ===== */
+/* -------- public API -------- */
 void open_file(void){ ensure_csv_exists(); load_csv(); }
 
 void list_users(void){
@@ -76,17 +96,18 @@ void list_users(void){
     printf("-------------------------------------------------------------------------------\n");
     for(int i=0;i<db.count;i++){
         printf("%-21s | %-20s | %-16s | %s\n",
-            db.items[i].company, db.items[i].contact, db.items[i].phone, db.items[i].email);
+               db.items[i].company, db.items[i].contact,
+               db.items[i].phone, db.items[i].email);
     }
 }
 
 void add_user(void){
     Customer c = {{0}};
     char buf[256];
-    printf("CompanyName: "); if(!fgets(buf,sizeof(buf),stdin)) return; rstrip(buf); strncpy(c.company, buf, MAX_STR-1);
-    printf("ContactPerson: "); if(!fgets(buf,sizeof(buf),stdin)) return; rstrip(buf); strncpy(c.contact, buf, MAX_STR-1);
-    printf("PhoneNumber: "); if(!fgets(buf,sizeof(buf),stdin)) return; rstrip(buf); strncpy(c.phone, buf, MAX_PHONE-1);
-    printf("Email: "); if(!fgets(buf,sizeof(buf),stdin)) return; rstrip(buf); strncpy(c.email, buf, MAX_STR-1);
+    printf("CompanyName: ");    if(!fgets(buf,sizeof(buf),stdin)) return; rstrip(buf); strncpy(c.company, buf, MAX_STR-1);
+    printf("ContactPerson: ");  if(!fgets(buf,sizeof(buf),stdin)) return; rstrip(buf); strncpy(c.contact, buf, MAX_STR-1);
+    printf("PhoneNumber: ");    if(!fgets(buf,sizeof(buf),stdin)) return; rstrip(buf); strncpy(c.phone,   buf, MAX_PHONE-1);
+    printf("Email: ");          if(!fgets(buf,sizeof(buf),stdin)) return; rstrip(buf); strncpy(c.email,   buf, MAX_STR-1);
 
     if (db.count < MAX_ROWS){
         db.items[db.count++] = c;
@@ -123,7 +144,8 @@ void edit_user(void){
     if(!fgets(ident,sizeof(ident),stdin)) return; rstrip(ident);
     printf("Field to update [CompanyName|ContactPerson|PhoneNumber|Email]: ");
     if(!fgets(field,sizeof(field),stdin)) return; rstrip(field);
-    printf("New value: "); if(!fgets(value,sizeof(value),stdin)) return; rstrip(value);
+    printf("New value: ");
+    if(!fgets(value,sizeof(value),stdin)) return; rstrip(value);
 
     int updated=0;
     for(int i=0;i<db.count;i++){
@@ -132,8 +154,8 @@ void edit_user(void){
             strstr(p->phone,ident)   || strstr(p->email,ident)){
             if(strcmp(field,"CompanyName")==0) strncpy(p->company,value,MAX_STR-1);
             else if(strcmp(field,"ContactPerson")==0) strncpy(p->contact,value,MAX_STR-1);
-            else if(strcmp(field,"PhoneNumber")==0) strncpy(p->phone,value,MAX_PHONE-1);
-            else if(strcmp(field,"Email")==0) strncpy(p->email,value,MAX_STR-1);
+            else if(strcmp(field,"PhoneNumber")==0)   strncpy(p->phone,value,MAX_PHONE-1);
+            else if(strcmp(field,"Email")==0)         strncpy(p->email,value,MAX_STR-1);
             else { puts("Unknown field."); continue; }
             updated++;
         }
@@ -156,4 +178,20 @@ void delete_user(void){
     db.count = kept;
     if(del){ save_csv(); printf("Deleted %d record(s).\n", del); }
     else puts("No records deleted.");
+}
+
+/* -------- run tests via system() -------- */
+void run_unit_test(void){
+    printf("Running unit tests...\n");
+    int rc = system("gcc -std=c11 -O2 -Wall -Wextra -pedantic tests/test_unit.c -o tests/test_unit && ./tests/test_unit");
+    if (rc != 0) puts("Unit test failed to run. Check tests/test_unit.c/path.");
+}
+void run_e2e_test(void){
+    printf("Running E2E test...\n");
+    int rc = system("./crm < tests/e2e_input.txt > tests/e2e_output.txt");
+    if (rc != 0) { puts("E2E runner failed. Is ./crm built and tests/e2e_input.txt present?"); return; }
+    system("grep -q \"Added.\"   tests/e2e_output.txt && echo \"[E2E] Add OK\"    || echo \"[E2E] Add FAIL\"");
+    system("grep -q \"Updated\"  tests/e2e_output.txt && echo \"[E2E] Update OK\" || echo \"[E2E] Update FAIL\"");
+    system("grep -q \"Deleted\"  tests/e2e_output.txt && echo \"[E2E] Delete OK\" || echo \"[E2E] Delete FAIL\"");
+    system("grep -q \"Bye!\"     tests/e2e_output.txt && echo \"[E2E] Exit OK\"   || echo \"[E2E] Exit FAIL\"");
 }
