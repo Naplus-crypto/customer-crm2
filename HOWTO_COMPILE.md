@@ -24,22 +24,6 @@ gcc main.c customer_manager.c -std=c11 -O2 -Wall -Wextra -pedantic -o crm
 
 ---
 
-## 3) รันทดสอบ
-
-### 3.1 Unit Test
-```bash
-gcc tests/test_unit.c customer_manager.c -std=c11 -O2 -Wall -Wextra -pedantic -o test_unit
-./test_unit
-```
-
-### 3.2 End-to-End (E2E) Test
-```bash
-./crm < tests/e2e_input.txt > tests/e2e_output.txt
-cat tests/e2e_output.txt
-```
-
----
-
 ## หมายเหตุ
 - ถ้าใช้ Windows → คำสั่ง `./crm` ให้เปลี่ยนเป็น `crm.exe`
 - ถ้าต้องการ clean ไฟล์ .o หรือ .exe สามารถลบได้เอง หรือเขียน Makefile เพิ่มเติม
