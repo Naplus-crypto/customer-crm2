@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* from customer_manager.c */
+/* prototypes from customer_manager.c */
 void open_file(void);
 void list_users(void);
 void list_inactive(void);
@@ -16,6 +16,7 @@ void run_e2e_test(void);
 int main(void){
     open_file();
     int choice=0; char line[32];
+
     for(;;){
         puts("==== Customer CRM ===");
         puts("1) List all");
