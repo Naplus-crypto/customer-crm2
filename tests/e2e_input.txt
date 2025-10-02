@@ -1,8 +1,7 @@
 2
 ACME Co., Ltd.
 Alice Ray
-         
-
+ 
 alice@acme.test
 2
 ACME Co., Ltd.
