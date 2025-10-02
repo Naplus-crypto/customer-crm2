@@ -1,96 +1,128 @@
-# ==== Add valid record ====
 2
 Rocket Co
 Alice
 0890000000
 alice@rocket.com
-
-# ==== Add invalid record (bad phone) ====
 2
 Bad Co
 Bob
 123
 bob@bad.com
-
-# ==== Add valid second record ====
 2
 Rocket Co
 Charlie
 0811111111
 charlie@rocket.com
+2
+Rocket Co
+Alice
+0890000000
+alice@rocket.com
+2
+Email Co
+Eve
+0812345678
+bademail
+2
+12345
+Num Co
+0812345678
+num@co.com
+2
+Valid Co
+123456
+0812345678
+c@valid.com
+2
+NoContact Co
+Empty Person
 
-# ==== List all users ====
+
+2
+Rocket Co
+Alice
+0812345678
+
+2
+EmailOnly Co
+Mail Man
+
+mail@only.com
 1
-
-# ==== Search user (should find Rocket Co) ====
 3
-Rocket
-
-# ==== Update record (change Charlie's phone) ====
+rocket
 4
 Charlie
 A
 PhoneNumber
 0822222222
 y
-
-# ==== Try update with invalid field ====
 4
 Alice
 A
 WrongField
 xxx
 y
+4
+0812345678
+A
+Email
+alice@rocket.com
+y
+4
+0812345678
+A
+PhoneNumber
 
-# ==== Search after update (should see new phone) ====
-3
-Charlie
-
-# ==== Delete Charlie ====
+y
 5
 Charlie
 A
 y
-
-# ==== List inactive (should show Charlie) ====
 7
-
-# ==== Restore Charlie ====
 8
 Charlie
 A
 y
-
-# ==== Search restored Charlie ====
 3
 Charlie
-
-# ==== Delete Alice but cancel ====
 5
 Alice
 A
 n
-
-# ==== Delete Alice confirm ====
 5
 Alice
 A
 y
-
-# ==== List inactive (should show Alice) ====
 7
-
-# ==== Restore Alice ====
 8
 Alice
 A
 y
-
-# ==== Run unit test from menu ====
+2
+MultiDelCo
+Person1
+0907777777
+m1@test.com
+2
+MultiDelCo
+Person2
+0907777777
+m2@test.com
+2
+MultiDelCo
+Person3
+0907777777
+m3@test.com
+5
+MultiDelCo
+1,2
+y
+7
+8
+MultiDelCo
+1
+y
 9
-
-# ==== Run e2e test from menu ====
 10
-
-# ==== Exit ====
 6
