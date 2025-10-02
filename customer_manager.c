@@ -1,5 +1,5 @@
-// customer_manager.c
-// Build with: gcc main.c customer_manager.c -std=c11 -O2 -Wall -Wextra -pedantic -o crm
+// customer_manager.c  (FULL VERSION with warnings)
+// Build: gcc main.c customer_manager.c -std=c11 -O2 -Wall -Wextra -pedantic -o crm
 
 #include <stdio.h>
 #include <string.h>
@@ -27,7 +27,7 @@ typedef struct {
 static CustomerDB db;
 static char DATA_PATH[256] = "customers.csv";
 
-/* ========== small utils ========== */
+/* ===== small utils ===== */
 static void rstrip(char *s){ size_t n=strlen(s); while(n && (s[n-1]=='\n'||s[n-1]=='\r')) s[--n]='\0'; }
 static void trim(char *s){ char *p=s; while(*p && isspace((unsigned char)*p)) p++; if(p!=s) memmove(s,p,strlen(p)+1);
                            for(int i=(int)strlen(s)-1;i>=0 && isspace((unsigned char)s[i]);i--) s[i]='\0'; }
@@ -45,8 +45,7 @@ static const char* istrstr(const char* haystack, const char* needle){
     return haystack + (pos - hbuf);
 }
 
-/* ========== CSV helpers (escape/parse) ========== */
-/* เขียนค่า field ให้ปลอดภัย: ถ้ามี comma/quote/newline จะใส่ "..." และ escape "" -> """" */
+/* ===== CSV helpers (escape/parse) ===== */
 static void csv_escape(FILE* f, const char* s){
     bool need_quote=false;
     for(const char* p=s; *p; ++p){
@@ -60,14 +59,11 @@ static void csv_escape(FILE* f, const char* s){
     }
     fputc('"',f);
 }
-
-/* parser แบบง่าย: รองรับ field ที่มี "..." และ quote ซ้อน "" */
 static int csv_parse_line(const char* line, char out[][MAX_STR], int max_fields){
-    int nf=0;
-    const char* p=line;
+    int nf=0; const char* p=line;
     while(*p && nf<max_fields){
         char buf[MAX_STR]; int bi=0;
-        if(*p=='"'){ /* quoted field */
+        if(*p=='"'){
             p++;
             while(*p){
                 if(*p=='"' && *(p+1)=='"'){ if(bi<MAX_STR-1) buf[bi++]='"'; p+=2; continue; }
@@ -75,25 +71,18 @@ static int csv_parse_line(const char* line, char out[][MAX_STR], int max_fields)
                 if(bi<MAX_STR-1) buf[bi++]=*p;
                 p++;
             }
-            buf[bi]='\0';
-            out[nf][0]='\0'; safe_copy(out[nf], buf, MAX_STR);
-            nf++;
+            buf[bi]='\0'; safe_copy(out[nf], buf, MAX_STR); nf++;
             if(*p==',') p++;
-        }else{ /* plain */
-            while(*p && *p!=',' && *p!='\n' && *p!='\r'){
-                if(bi<MAX_STR-1) buf[bi++]=*p;
-                p++;
-            }
-            buf[bi]='\0';
-            out[nf][0]='\0'; safe_copy(out[nf], buf, MAX_STR);
-            nf++;
+        }else{
+            while(*p && *p!=',' && *p!='\n' && *p!='\r'){ if(bi<MAX_STR-1) buf[bi++]=*p; p++; }
+            buf[bi]='\0'; safe_copy(out[nf], buf, MAX_STR); nf++;
             if(*p==',') p++;
         }
     }
     return nf;
 }
 
-/* ========== Validation & business rules ========== */
+/* ===== Validation & rules ===== */
 static bool valid_company(const char* s){
     int len=(int)strlen(s); if(len<2||len>80) return false;
     if(isspace((unsigned char)s[0])||isspace((unsigned char)s[len-1])) return false;
@@ -101,8 +90,7 @@ static bool valid_company(const char* s){
     for(int i=0;i<len;i++){
         unsigned char c=(unsigned char)s[i];
         if(isalpha(c)) hasalpha=1;
-        if(!(isalnum(c) || isspace(c) || c=='.' || c=='-' || c=='/' || c=='&' || c=='(' || c==')' || c=='\'' || c==',' ))
-            return false;
+        if(!(isalnum(c)||isspace(c)||c=='.'||c=='-'||c=='/'||c=='&'||c=='('||c==')'||c=='\''||c==',')) return false;
         if(i>0 && !isalnum(c) && !isspace(c)){
             if(!isalnum((unsigned char)s[i-1]) && !isspace((unsigned char)s[i-1])){
                 consec++; if(consec>2) return false;
@@ -117,8 +105,7 @@ static bool valid_contact(const char* s){
     for(int i=0;i<len;i++){
         unsigned char c=(unsigned char)s[i];
         if(isalpha(c)) hasalpha=1;
-        if(!(isalnum(c) || isspace(c) || c=='.' || c=='-' || c=='/' || c=='&' || c=='(' || c==')' || c=='\'' || c==',' ))
-            return false;
+        if(!(isalnum(c)||isspace(c)||c=='.'||c=='-'||c=='/'||c=='&'||c=='('||c==')'||c=='\''||c==',')) return false;
     }
     return hasalpha;
 }
@@ -126,16 +113,15 @@ static void normalize_phone(char* s){
     if(strncmp(s,"+66",3)==0){ char t[MAX_PHONE]; snprintf(t,sizeof(t),"0%s",s+3); safe_copy(s,t,MAX_PHONE); }
 }
 static bool valid_phone_strict(const char* s){
-    if(s[0]=='\0') return true; /* optional */
+    if(s[0]=='\0') return true;
     int len=(int)strlen(s); if(len<9||len>15) return false;
     if(s[0]!='0') return false;
     for(int i=0;i<len;i++) if(!isdigit((unsigned char)s[i])) return false;
-    /* prefix check */
-    if(!( (s[0]=='0') && (s[1]=='2'||s[1]=='3'||s[1]=='6'||s[1]=='8'||s[1]=='9') )) return false;
+    if(!(s[1]=='2'||s[1]=='3'||s[1]=='6'||s[1]=='8'||s[1]=='9')) return false;
     return true;
 }
 static bool valid_email_strict(const char* s){
-    if(s[0]=='\0') return true; /* optional */
+    if(s[0]=='\0') return true;
     if(strchr(s,' ') || strstr(s,"..")) return false;
     const char* at=strchr(s,'@'); if(!at || strchr(at+1,'@')) return false;
     const char* dot=strrchr(at,'.'); if(!dot || dot<=at+1) return false;
@@ -144,7 +130,7 @@ static bool valid_email_strict(const char* s){
 }
 static bool has_at_least_one_contact(Customer* c){ return (c->phone[0]!='\0' || c->email[0]!='\0'); }
 
-/* กันข้อมูลซ้ำ: ถ้ามี email ใช้ (company,contact,email) / ถ้า email ว่างใช้ (company,contact,phone) */
+/* กันซ้ำ: ถ้ามี email ใช้ (company,contact,email) / ถ้า email ว่างใช้ (company,contact,phone) */
 static bool is_duplicate(const Customer* c, int skip_index){
     for(int i=0;i<db.count;i++){
         if(i==skip_index) continue;
@@ -161,7 +147,27 @@ static bool is_duplicate(const Customer* c, int skip_index){
     return false;
 }
 
-/* ========== IO: open/save ========== */
+/* เตือน: email/phone ซ้ำในบริษัทเดียวกันแต่คนละ contact (ไม่บล็อค) */
+static void warn_company_duplications(const Customer* c, int skip_index){
+    bool warned=false;
+    for(int i=0;i<db.count;i++){
+        if(i==skip_index) continue;
+        const Customer *p=&db.items[i];
+        if(strcmp(p->status,"Inactive")==0) continue;
+        if(strcmp(c->company,p->company)==0 && strcmp(c->contact,p->contact)!=0){
+            if(c->email[0] && strcmp(c->email,p->email)==0){
+                if(!warned){ puts("[Warning] Same email used by another contact in the same company:"); warned=true; }
+                printf("  - %s | %s | %s | %s\n", p->company,p->contact,p->phone,p->email);
+            }
+            if(c->phone[0] && strcmp(c->phone,p->phone)==0){
+                if(!warned){ puts("[Warning] Same phone used by another contact in the same company:"); warned=true; }
+                printf("  - %s | %s | %s | %s\n", p->company,p->contact,p->phone,p->email);
+            }
+        }
+    }
+}
+
+/* ===== IO: open/save ===== */
 void set_data_path(const char* path){ safe_copy(DATA_PATH, path, sizeof(DATA_PATH)); }
 
 static void ensure_csv_exists(void){
@@ -181,10 +187,8 @@ void open_file(void){
     char line[1024];
     if(!fgets(line,sizeof(line),f)){ fclose(f); return; } /* header */
     while(fgets(line,sizeof(line),f) && db.count<MAX_ROWS){
-        rstrip(line);
-        if(line[0]=='\0') continue;
-        char fields[5][MAX_STR]={{0}};
-        int n=csv_parse_line(line, fields, 5);
+        rstrip(line); if(line[0]=='\0') continue;
+        char fields[5][MAX_STR]={{0}}; int n=csv_parse_line(line, fields, 5);
         if(n<1) continue;
         Customer c={{0}};
         if(n>=1) safe_copy(c.company, fields[0], MAX_STR);
@@ -212,7 +216,7 @@ static void save_csv(void){
     fclose(f);
 }
 
-/* ========== helpers for multi-select / confirm ========== */
+/* ===== helpers: multi-select / confirm ===== */
 static int parse_index_list(const char* s, int maxn, int *out, int outcap){
     int n=0; char tmp[256]; safe_copy(tmp,s,sizeof(tmp));
     char* tok=strtok(tmp,",");
@@ -231,14 +235,14 @@ static bool ask_confirm(const char* msg){
     return (a[0]=='y'||a[0]=='Y');
 }
 
-/* ========== printing ========== */
+/* ===== printing ===== */
 static void print_header(bool inactive){
     if(inactive) puts("[Inactive only]");
     printf("%-21s | %-20s | %-16s | %s\n","CompanyName","ContactPerson","PhoneNumber","Email");
     puts("-------------------------------------------------------------------------------");
 }
 
-/* ========== list/search ========== */
+/* ===== list/search ===== */
 void list_users(void){
     print_header(false);
     for(int i=0;i<db.count;i++){
@@ -273,7 +277,7 @@ void search_user(void){
     if(!found) puts("No records found.");
 }
 
-/* ========== add/update/delete/restore ========== */
+/* ===== add/update/delete/restore ===== */
 void add_user(void){
     char company[MAX_STR], contact[MAX_STR], phone[MAX_PHONE], email[MAX_STR];
     puts("=== Add Customer (STRICT + Practical) ===");
@@ -304,6 +308,10 @@ void add_user(void){
     safe_copy(c.status,"Active",sizeof(c.status));
 
     if(!has_at_least_one_contact(&c)){ puts("× ต้องมีอย่างน้อย 1 ช่องทางติดต่อ (Phone หรือ Email)"); return; }
+
+    /* เตือน (ไม่บล็อค) ถ้า email/phone ซ้ำกับคนอื่นในบริษัทเดียวกัน */
+    warn_company_duplications(&c, -1);
+
     if(is_duplicate(&c,-1)){ puts("× Duplicate: ข้อมูลนี้มีอยู่แล้ว"); return; }
 
     if(db.count<MAX_ROWS){ db.items[db.count++]=c; save_csv(); puts("✓ Added."); }
@@ -321,8 +329,7 @@ void edit_user(void){
         if(strcmp(p->status,"Inactive")==0) continue;
         if( istrstr(p->company,ident) || istrstr(p->contact,ident) ||
             istrstr(p->phone,ident)   || istrstr(p->email,ident) ){
-            idx[n++]=i;
-            if(n==(int)(sizeof(idx)/sizeof(idx[0]))) break;
+            idx[n++]=i; if(n==(int)(sizeof(idx)/sizeof(idx[0]))) break;
         }
     }
     if(n==0){ puts("No active records found."); return; }
@@ -394,6 +401,10 @@ void edit_user(void){
         }else { puts("Unknown field."); return; }
 
         if(!has_at_least_one_contact(&tmp)){ puts("Need at least one of Phone/Email."); rejected++; continue; }
+
+        /* เตือน (ไม่บล็อค) */
+        warn_company_duplications(&tmp, i);
+
         if(is_duplicate(&tmp,i)){ puts("Duplicate after update."); rejected++; continue; }
 
         *p = tmp; updated++;
@@ -502,7 +513,7 @@ void restore_user(void){
     else puts("No records restored.");
 }
 
-/* ========== test runners (via system) ========== */
+/* ===== tests via system ===== */
 void run_unit_test(void){
     puts("Running unit tests...");
     int rc = system("gcc -std=c11 -O2 -Wall -Wextra -pedantic tests/test_unit.c -o tests/test_unit && ./tests/test_unit");
@@ -518,7 +529,7 @@ void run_e2e_test(void){
     (void)rc;
 }
 
-/* ========== menu ========== */
+/* ===== menu ===== */
 void display_menu(void){
     char line[32];
     for(;;){
@@ -549,3 +560,17 @@ void display_menu(void){
         else puts("Invalid choice.");
     }
 }
+
+/* ===== forward declarations for main.c ===== */
+void open_file(void);
+void list_users(void);
+void list_inactive(void);
+void search_user(void);
+void add_user(void);
+void edit_user(void);
+void delete_user(void);
+void restore_user(void);
+void run_unit_test(void);
+void run_e2e_test(void);
+void display_menu(void);
+
