@@ -1,27 +1,96 @@
+# ==== Add valid record ====
 2
 Rocket Co
-Rita Ray
-0812345678
-rita@rocket.io
+Alice
+0890000000
+alice@rocket.com
+
+# ==== Add invalid record (bad phone) ====
+2
+Bad Co
+Bob
+123
+bob@bad.com
+
+# ==== Add valid second record ====
+2
+Rocket Co
+Charlie
+0811111111
+charlie@rocket.com
+
+# ==== List all users ====
 1
+
+# ==== Search user (should find Rocket Co) ====
 3
-rocket
+Rocket
+
+# ==== Update record (change Charlie's phone) ====
 4
-rocket
+Charlie
 A
 PhoneNumber
-0890000000
+0822222222
 y
+
+# ==== Try update with invalid field ====
+4
+Alice
+A
+WrongField
+xxx
+y
+
+# ==== Search after update (should see new phone) ====
 3
-0890
+Charlie
+
+# ==== Delete Charlie ====
 5
-rocket
+Charlie
 A
 y
+
+# ==== List inactive (should show Charlie) ====
 7
+
+# ==== Restore Charlie ====
 8
-rocket
+Charlie
 A
 y
-1
+
+# ==== Search restored Charlie ====
+3
+Charlie
+
+# ==== Delete Alice but cancel ====
+5
+Alice
+A
+n
+
+# ==== Delete Alice confirm ====
+5
+Alice
+A
+y
+
+# ==== List inactive (should show Alice) ====
+7
+
+# ==== Restore Alice ====
+8
+Alice
+A
+y
+
+# ==== Run unit test from menu ====
+9
+
+# ==== Run e2e test from menu ====
+10
+
+# ==== Exit ====
 6
