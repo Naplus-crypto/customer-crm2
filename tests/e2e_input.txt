@@ -1,19 +1,20 @@
 2
-E2E Corp
-Alice
-0901111111
-alice@e2e.test
+ACME Co., Ltd.
+Alice Ray
+         
+
+alice@acme.test
 2
-E2E Corp
-Bob
-0902222222
-bob@e2e.test
+ACME Co., Ltd.
+Bob Park
++66812223333
+
 4
-E2E Corp
+ACME Co., Ltd.
 PhoneNumber
-0903333333
+0813333333
 5
-E2E Corp
+ACME Co., Ltd.
 1,2
 y
 6
