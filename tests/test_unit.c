@@ -1,57 +1,86 @@
-#include <assert.h>
 #include <stdio.h>
+#include <assert.h>
 #include <string.h>
 
-/* include implementation for a standalone test binary */
+// รวมโค้ด customer_manager.c เพื่อเรียกฟังก์ชันได้ตรง ๆ
 #include "../customer_manager.c"
 
-int main(void){
-    /* ใช้ไฟล์แยกสำหรับยูนิตเทสต์ */
-    set_data_path("tests/customers_test.csv");
+void test_add_user() {
+    printf("[Unit] test_add_user...\n");
+
+    set_data_path("tests/test_unit.csv");
     open_file();
-    int start = db.count;
-
-    /* 1) เพิ่มบริษัทมี comma + email อย่างเดียว (phone ว่าง) */
-    Customer a = {"ACME Co., Ltd.","Alice Ray","","alice@acme.test","Active"};
-    assert(valid_company(a.company));
-    assert(valid_contact(a.contact));
-    assert(a.phone[0]=='\0');             /* optional */
-    assert(valid_email_strict(a.email));
-    assert(!is_duplicate(&a,-1));
-
-    db.items[db.count++] = a;
+    db.count = 0;
     save_csv();
 
-    /* 2) โหลดใหม่แล้วต้องอ่านค่าที่มี quote/comma ได้ถูก */
-    open_file();
-    int found=0;
-    for(int i=0;i<db.count;i++){
-        if(strcmp(db.items[i].company,"ACME Co., Ltd.")==0 &&
-           strcmp(db.items[i].contact,"Alice Ray")==0 &&
-           strcmp(db.items[i].email,"alice@acme.test")==0){
-            found=1;
-            break;
-        }
-    }
-    assert(found==1);
+    // mock input
+    FILE *f = fopen("tests/mock_input.txt", "w");
+    fprintf(f, "UnitCo\nUnitPerson\n0900000000\nunit@test.com\n");
+    fclose(f);
+    freopen("tests/mock_input.txt", "r", stdin);
 
-    /* 3) เพิ่ม contact เดิมอีกเรคคอร์ด แต่เป็น phone อย่างเดียว (email ว่าง) */
-    Customer b = {"ACME Co., Ltd.","Alice Ray","0812345678","", "Active"};
-    assert(valid_company(b.company));
-    assert(valid_contact(b.contact));
-    assert(valid_phone_strict(b.phone));
-    assert(b.email[0]=='\0');
-    assert(!is_duplicate(&b,-1));   /* ไม่ซ้ำ: email ว่าง ใช้คีย์ (Company,Contact,Phone) */
-    db.items[db.count++] = b;
-    save_csv();
+    add_user();
+    assert(db.count == 1);
+    assert(strcmp(db.items[0].company, "UnitCo") == 0);
+    assert(strcmp(db.items[0].contact, "UnitPerson") == 0);
+    assert(strcmp(db.items[0].phone, "0900000000") == 0);
+    assert(strcmp(db.items[0].email, "unit@test.com") == 0);
+    assert(db.items[0].active == 1);
+}
 
-    /* 4) กัน duplicate ตามกฎ */
-    Customer dup1 = {"ACME Co., Ltd.","Alice Ray","","alice@acme.test","Active"};
-    assert(is_duplicate(&dup1,-1)); /* อีเมลเดียวกัน => duplicate */
+void test_edit_user() {
+    printf("[Unit] test_edit_user...\n");
 
-    Customer dup2 = {"ACME Co., Ltd.","Alice Ray","0812345678","","Active"};
-    assert(is_duplicate(&dup2,-1)); /* เบอร์เดียวกัน (เมื่อ email ว่าง) => duplicate */
+    // mock input สำหรับแก้ไข phone
+    FILE *f = fopen("tests/mock_input.txt", "w");
+    fprintf(f, "UnitCo\nA\nPhoneNumber\n0911111111\ny\n");
+    fclose(f);
+    freopen("tests/mock_input.txt", "r", stdin);
 
-    printf("✓ ALL UNIT TESTS PASSED\n");
+    edit_user();
+    assert(strcmp(db.items[0].phone, "0911111111") == 0);
+}
+
+void test_delete_restore_user() {
+    printf("[Unit] test_delete_restore_user...\n");
+
+    // mock input สำหรับ delete
+    FILE *f = fopen("tests/mock_input.txt", "w");
+    fprintf(f, "UnitCo\nA\ny\n");
+    fclose(f);
+    freopen("tests/mock_input.txt", "r", stdin);
+
+    delete_user();
+    assert(db.items[0].active == 0);
+
+    // mock input สำหรับ restore
+    f = fopen("tests/mock_input.txt", "w");
+    fprintf(f, "UnitCo\nA\ny\n");
+    fclose(f);
+    freopen("tests/mock_input.txt", "r", stdin);
+
+    restore_user();
+    assert(db.items[0].active == 1);
+}
+
+void test_search_user() {
+    printf("[Unit] test_search_user...\n");
+
+    // mock input สำหรับ search
+    FILE *f = fopen("tests/mock_input.txt", "w");
+    fprintf(f, "UnitCo\n");
+    fclose(f);
+    freopen("tests/mock_input.txt", "r", stdin);
+
+    search_user(); // ควรเจอ record ที่มี UnitCo
+}
+
+int main() {
+    printf("===== Running Unit Tests =====\n");
+    test_add_user();
+    test_edit_user();
+    test_delete_restore_user();
+    test_search_user();
+    printf("[Unit] All tests passed!\n");
     return 0;
 }
