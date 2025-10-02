@@ -18,7 +18,6 @@ customer-crm/
 ├── customer_manager.c   # ฟังก์ชันหลัก CRUD + CSV (validation + soft delete)
 ├── main.c               # โปรแกรมหลัก + เมนู
 ├── customers.csv        # ไฟล์ข้อมูลตัวอย่าง (>=15 records)
-├── .gitignore           # (ถ้ามี) กันไฟล์ไบนารี/ชั่วคราว
 └── tests/
     ├── test_unit.c      # Unit test (เรียกผ่านเมนู)
     ├── test_e2e.c       # ไฟล์ตัวอย่าง (เมนูจะใช้ e2e_input.txt)
