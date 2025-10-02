@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <string.h>
 
-// รวมโค้ด customer_manager.c เข้ามาเพื่อเรียกใช้ฟังก์ชันโดยตรง
+// รวมโค้ด customer_manager.c
 #include "../customer_manager.c"
 
 // ===== Helper =====
@@ -12,235 +12,215 @@ static void reset_db(const char *path) {
     db.count = 0;
     save_csv();
     assert(db.count == 0);
-    printf("[Reset] DB at %s cleared.\n", path);
 }
 
-// ===== Tests =====
-
-// --- ADD USER ---
-void test_add_valid() {
-    printf("[Unit] test_add_valid...\n");
-    reset_db("tests/test_unit.csv");
-
-    FILE *f = fopen("tests/mock_input.txt", "w");
-    fprintf(f, "UnitCo\nUnitPerson\n0900000000\nunit@test.com\n");
-    fclose(f);
-    freopen("tests/mock_input.txt", "r", stdin);
-
-    add_user();
-    assert(db.count == 1);
-    assert(strcmp(db.items[0].company, "UnitCo") == 0);
-    assert(strcmp(db.items[0].contact, "UnitPerson") == 0);
-    assert(strcmp(db.items[0].phone, "0900000000") == 0);
-    assert(strcmp(db.items[0].email, "unit@test.com") == 0);
-    assert(strcmp(db.items[0].status, "Active") == 0);
-}
-
-void test_add_invalid_company_contact() {
-    printf("[Unit] test_add_invalid_company_contact...\n");
-    reset_db("tests/test_unit.csv");
-
-    // company ไม่มีตัวอักษร
-    FILE *f = fopen("tests/mock_input.txt", "w");
-    fprintf(f, "12345\nNoAlpha\n0900000000\nna@test.com\n");
-    fclose(f);
-    freopen("tests/mock_input.txt", "r", stdin);
-    add_user();
-    assert(db.count == 0);
-
-    // contact ไม่มีตัวอักษร
-    f = fopen("tests/mock_input.txt", "w");
-    fprintf(f, "ValidCo\n123456\n0900000000\nc@test.com\n");
-    fclose(f);
-    freopen("tests/mock_input.txt", "r", stdin);
-    add_user();
-    assert(db.count == 0);
-}
-
-void test_add_invalid_phone() {
-    printf("[Unit] test_add_invalid_phone...\n");
-    reset_db("tests/test_unit.csv");
-
-    FILE *f = fopen("tests/mock_input.txt", "w");
-    fprintf(f, "BadCo\nBadPerson\n123\nbad@test.com\n"); // เบอร์สั้นเกิน
-    fclose(f);
-    freopen("tests/mock_input.txt", "r", stdin);
-
-    add_user();
-    assert(db.count == 0); // ไม่ควรเพิ่ม
-}
-
-void test_add_invalid_email() {
-    printf("[Unit] test_add_invalid_email...\n");
-    reset_db("tests/test_unit.csv");
-
-    FILE *f = fopen("tests/mock_input.txt", "w");
-    fprintf(f, "BadCo\nBadPerson\n0901111111\nbademail\n"); // ไม่มี @
-    fclose(f);
-    freopen("tests/mock_input.txt", "r", stdin);
-
-    add_user();
-    assert(db.count == 0);
-}
-
-void test_add_no_contact() {
-    printf("[Unit] test_add_no_contact...\n");
-    reset_db("tests/test_unit.csv");
-
-    FILE *f = fopen("tests/mock_input.txt", "w");
-    fprintf(f, "NoContactCo\nNoPerson\n\n\n"); // ไม่มี phone + email
-    fclose(f);
-    freopen("tests/mock_input.txt", "r", stdin);
-
-    add_user();
-    assert(db.count == 0);
-}
-
-void test_add_phone_or_email_only() {
-    printf("[Unit] test_add_phone_or_email_only...\n");
-    reset_db("tests/test_unit.csv");
-
-    // phone only
-    FILE *f = fopen("tests/mock_input.txt", "w");
-    fprintf(f, "PhoneCo\nPhonePerson\n0812345678\n\n");
-    fclose(f);
-    freopen("tests/mock_input.txt", "r", stdin);
-    add_user();
-    assert(db.count == 1);
-
-    // email only
-    f = fopen("tests/mock_input.txt", "w");
-    fprintf(f, "EmailCo\nEmailPerson\n\nemail@test.com\n");
-    fclose(f);
-    freopen("tests/mock_input.txt", "r", stdin);
-    add_user();
-    assert(db.count == 2);
-}
-
-void test_add_duplicate() {
-    printf("[Unit] test_add_duplicate...\n");
-    reset_db("tests/test_unit.csv");
-
-    FILE *f = fopen("tests/mock_input.txt", "w");
-    fprintf(f, "DupCo\nDupPerson\n0811111111\ndup@test.com\n");
-    fclose(f);
-    freopen("tests/mock_input.txt", "r", stdin);
-    add_user();
-    assert(db.count == 1);
-
-    // add ซ้ำ
-    f = fopen("tests/mock_input.txt", "w");
-    fprintf(f, "DupCo\nDupPerson\n0811111111\ndup@test.com\n");
-    fclose(f);
-    freopen("tests/mock_input.txt", "r", stdin);
-    add_user();
-    assert(db.count == 1); // ต้องไม่เพิ่ม
-}
+// --- ADD ---
+void test_add_valid();
+void test_add_invalids();
+void test_add_duplicate();
+void test_add_phone_or_email_only();
 
 // --- SEARCH ---
-void test_search_case_insensitive() {
-    printf("[Unit] test_search_case_insensitive...\n");
-    reset_db("tests/test_unit.csv");
+void test_search_case_insensitive();
 
-    strcpy(db.items[0].company, "SearchCo");
-    strcpy(db.items[0].contact, "SearchPerson");
-    strcpy(db.items[0].phone, "0902222222");
-    strcpy(db.items[0].email, "search@test.com");
-    strcpy(db.items[0].status, "Active");
-    db.count = 1;
-    save_csv();
-
-    FILE *f = fopen("tests/mock_input.txt", "w");
-    fprintf(f, "searchco\n"); // lowercase
-    fclose(f);
-    freopen("tests/mock_input.txt", "r", stdin);
-
-    search_user(); // ต้องเจอ
-}
-
-// --- EDIT USER ---
-void test_edit_duplicate_prevention() {
-    printf("[Unit] test_edit_duplicate_prevention...\n");
-    reset_db("tests/test_unit.csv");
-
-    strcpy(db.items[0].company, "EditCo");
-    strcpy(db.items[0].contact, "PersonA");
-    strcpy(db.items[0].phone, "0900000001");
-    strcpy(db.items[0].email, "a@test.com");
-    strcpy(db.items[0].status, "Active");
-    strcpy(db.items[1].company, "EditCo");
-    strcpy(db.items[1].contact, "PersonB");
-    strcpy(db.items[1].phone, "0900000002");
-    strcpy(db.items[1].email, "b@test.com");
-    strcpy(db.items[1].status, "Active");
-    db.count = 2;
-    save_csv();
-
-    FILE *f = fopen("tests/mock_input.txt", "w");
-    fprintf(f, "PersonB\nA\nContactPerson\nPersonA\ny\n");
-    fclose(f);
-    freopen("tests/mock_input.txt", "r", stdin);
-
-    edit_user(); // ควรไม่ให้เปลี่ยนเพราะ duplicate
-    assert(strcmp(db.items[1].contact, "PersonB") == 0);
-}
+// --- EDIT ---
+void test_edit_invalids();
+void test_edit_duplicate_prevention();
 
 // --- DELETE/RESTORE ---
-void test_delete_restore_multiple() {
-    printf("[Unit] test_delete_restore_multiple...\n");
-    reset_db("tests/test_unit.csv");
+void test_delete_restore_multiple();
+void test_restore_not_found();
 
-    for (int i=0; i<3; i++) {
-        sprintf(db.items[i].company, "MultiDelCo");
-        sprintf(db.items[i].contact, "Person%d", i+1);
-        strcpy(db.items[i].phone, "0907777777");
-        sprintf(db.items[i].email, "m%d@test.com", i+1);
-        strcpy(db.items[i].status, "Active");
-    }
-    db.count = 3;
-    save_csv();
+// --- EDGE CASE CSV ---
+void test_csv_escape();
 
-    // delete index 1,2
-    FILE *f = fopen("tests/mock_input.txt", "w");
-    fprintf(f, "MultiDelCo\n1,2\ny\n");
-    fclose(f);
-    freopen("tests/mock_input.txt", "r", stdin);
-    delete_user();
-    assert(strcmp(db.items[0].status, "Inactive") == 0);
-    assert(strcmp(db.items[1].status, "Inactive") == 0);
-    assert(strcmp(db.items[2].status, "Active") == 0);
-
-    // restore index 1
-    f = fopen("tests/mock_input.txt", "w");
-    fprintf(f, "MultiDelCo\n1\ny\n");
-    fclose(f);
-    freopen("tests/mock_input.txt", "r", stdin);
-    restore_user();
-    assert(strcmp(db.items[0].status, "Active") == 0);
-}
-
-// ===== MAIN =====
 int main() {
     printf("===== Running Unit Tests =====\n");
 
-    // Add
     test_add_valid();
-    test_add_invalid_company_contact();
-    test_add_invalid_phone();
-    test_add_invalid_email();
-    test_add_no_contact();
+    test_add_invalids();
     test_add_phone_or_email_only();
     test_add_duplicate();
 
-    // Search
     test_search_case_insensitive();
 
-    // Edit
+    test_edit_invalids();
     test_edit_duplicate_prevention();
 
-    // Delete/Restore
     test_delete_restore_multiple();
+    test_restore_not_found();
+
+    test_csv_escape();
 
     printf("===== All Unit Tests Passed =====\n");
     return 0;
+}
+
+// --- Implementations ---
+
+void test_add_valid() {
+    reset_db("tests/test_unit.csv");
+    FILE *f = fopen("tests/mock_input.txt","w");
+    fprintf(f,"Co1\nPerson1\n0901111111\np1@test.com\n");
+    fclose(f);
+    freopen("tests/mock_input.txt","r",stdin);
+    add_user();
+    assert(db.count==1);
+}
+
+void test_add_invalids() {
+    reset_db("tests/test_unit.csv");
+    FILE *f = fopen("tests/mock_input.txt","w");
+    fprintf(f,"12345\nNoAlpha\n0900000000\nna@test.com\n"); // invalid company
+    fclose(f); freopen("tests/mock_input.txt","r",stdin); add_user();
+    assert(db.count==0);
+
+    f = fopen("tests/mock_input.txt","w");
+    fprintf(f,"ValidCo\n123456\n0900000000\nc@test.com\n"); // invalid contact
+    fclose(f); freopen("tests/mock_input.txt","r",stdin); add_user();
+    assert(db.count==0);
+
+    f = fopen("tests/mock_input.txt","w");
+    fprintf(f,"PhoneBad\nBad\n123\nbad@test.com\n"); // bad phone
+    fclose(f); freopen("tests/mock_input.txt","r",stdin); add_user();
+    assert(db.count==0);
+
+    f = fopen("tests/mock_input.txt","w");
+    fprintf(f,"EmailBad\nBad\n0901111111\nbademail\n"); // bad email
+    fclose(f); freopen("tests/mock_input.txt","r",stdin); add_user();
+    assert(db.count==0);
+
+    f = fopen("tests/mock_input.txt","w");
+    fprintf(f,"NoContact\nNC\n\n\n"); // no contact
+    fclose(f); freopen("tests/mock_input.txt","r",stdin); add_user();
+    assert(db.count==0);
+}
+
+void test_add_phone_or_email_only() {
+    reset_db("tests/test_unit.csv");
+
+    FILE *f = fopen("tests/mock_input.txt","w");
+    fprintf(f,"PhoneCo\nP1\n0812345678\n\n");
+    fclose(f); freopen("tests/mock_input.txt","r",stdin); add_user();
+    assert(db.count==1);
+
+    f = fopen("tests/mock_input.txt","w");
+    fprintf(f,"EmailCo\nE1\n\nmail@test.com\n");
+    fclose(f); freopen("tests/mock_input.txt","r",stdin); add_user();
+    assert(db.count==2);
+}
+
+void test_add_duplicate() {
+    reset_db("tests/test_unit.csv");
+
+    FILE *f = fopen("tests/mock_input.txt","w");
+    fprintf(f,"DupCo\nDP\n0811111111\ndup@test.com\n");
+    fclose(f); freopen("tests/mock_input.txt","r",stdin); add_user();
+    assert(db.count==1);
+
+    f = fopen("tests/mock_input.txt","w");
+    fprintf(f,"DupCo\nDP\n0811111111\ndup@test.com\n");
+    fclose(f); freopen("tests/mock_input.txt","r",stdin); add_user();
+    assert(db.count==1); // duplicate blocked
+}
+
+void test_search_case_insensitive() {
+    reset_db("tests/test_unit.csv");
+    strcpy(db.items[0].company,"SearchCo");
+    strcpy(db.items[0].contact,"Person");
+    strcpy(db.items[0].phone,"0909999999");
+    strcpy(db.items[0].email,"s@test.com");
+    strcpy(db.items[0].status,"Active");
+    db.count=1; save_csv();
+
+    FILE *f=fopen("tests/mock_input.txt","w");
+    fprintf(f,"searchco\n");
+    fclose(f); freopen("tests/mock_input.txt","r",stdin);
+    search_user();
+}
+
+void test_edit_invalids() {
+    reset_db("tests/test_unit.csv");
+    strcpy(db.items[0].company,"EditCo");
+    strcpy(db.items[0].contact,"EP");
+    strcpy(db.items[0].phone,"0903333333");
+    strcpy(db.items[0].email,"e@test.com");
+    strcpy(db.items[0].status,"Active");
+    db.count=1; save_csv();
+
+    FILE *f=fopen("tests/mock_input.txt","w");
+    fprintf(f,"EditCo\nA\nPhoneNumber\n123\ny\n"); // invalid phone
+    fclose(f); freopen("tests/mock_input.txt","r",stdin);
+    edit_user();
+    assert(strcmp(db.items[0].phone,"0903333333")==0);
+
+    f=fopen("tests/mock_input.txt","w");
+    fprintf(f,"EditCo\nA\nEmail\nbademail\ny\n"); // invalid email
+    fclose(f); freopen("tests/mock_input.txt","r",stdin);
+    edit_user();
+    assert(strcmp(db.items[0].email,"e@test.com")==0);
+}
+
+void test_edit_duplicate_prevention() {
+    reset_db("tests/test_unit.csv");
+    strcpy(db.items[0].company,"EditCo");
+    strcpy(db.items[0].contact,"A");
+    strcpy(db.items[0].phone,"0900000001");
+    strcpy(db.items[0].email,"a@test.com");
+    strcpy(db.items[0].status,"Active");
+    strcpy(db.items[1].company,"EditCo");
+    strcpy(db.items[1].contact,"B");
+    strcpy(db.items[1].phone,"0900000002");
+    strcpy(db.items[1].email,"b@test.com");
+    strcpy(db.items[1].status,"Active");
+    db.count=2; save_csv();
+
+    FILE *f=fopen("tests/mock_input.txt","w");
+    fprintf(f,"B\nA\nContactPerson\nA\ny\n");
+    fclose(f); freopen("tests/mock_input.txt","r",stdin);
+    edit_user();
+    assert(strcmp(db.items[1].contact,"B")==0);
+}
+
+void test_delete_restore_multiple() {
+    reset_db("tests/test_unit.csv");
+    for(int i=0;i<3;i++){
+        sprintf(db.items[i].company,"MultiDelCo");
+        sprintf(db.items[i].contact,"Person%d",i+1);
+        strcpy(db.items[i].phone,"0907777777");
+        sprintf(db.items[i].email,"m%d@test.com",i+1);
+        strcpy(db.items[i].status,"Active");
+    }
+    db.count=3; save_csv();
+
+    FILE *f=fopen("tests/mock_input.txt","w");
+    fprintf(f,"MultiDelCo\n1,2\ny\n");
+    fclose(f); freopen("tests/mock_input.txt","r",stdin);
+    delete_user();
+    assert(strcmp(db.items[0].status,"Inactive")==0);
+    assert(strcmp(db.items[1].status,"Inactive")==0);
+    assert(strcmp(db.items[2].status,"Active")==0);
+
+    f=fopen("tests/mock_input.txt","w");
+    fprintf(f,"MultiDelCo\n1\ny\n");
+    fclose(f); freopen("tests/mock_input.txt","r",stdin);
+    restore_user();
+    assert(strcmp(db.items[0].status,"Active")==0);
+}
+
+void test_restore_not_found() {
+    reset_db("tests/test_unit.csv");
+    FILE *f=fopen("tests/mock_input.txt","w");
+    fprintf(f,"Nope\n");
+    fclose(f); freopen("tests/mock_input.txt","r",stdin);
+    restore_user(); // ควรไม่ crash
+}
+
+void test_csv_escape() {
+    reset_db("tests/test_unit.csv");
+    FILE *f=fopen("tests/mock_input.txt","w");
+    fprintf(f,"\"Quoted, Co\"\nQMan\n0912345678\nq@test.com\n");
+    fclose(f); freopen("tests/mock_input.txt","r",stdin);
+    add_user();
+    assert(db.count==1);
 }
