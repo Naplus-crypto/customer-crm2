@@ -1,104 +1,153 @@
+# ==== Add valid record ====
 2
 Rocket Co
 Alice
 0890000000
 alice@rocket.com
+
+# ==== Add invalid phone ====
 2
 Bad Co
 Bob
 123
 bob@bad.com
-2
-Rocket Co
-Charlie
-0811111111
-charlie@rocket.com
-2
-Rocket Co
-Alice
-0890000000
-alice@rocket.com
+
+# ==== Add invalid email ====
 2
 Email Co
 Eve
 0812345678
 bademail
+
+# ==== Add invalid company ====
 2
 12345
 Num Co
 0812345678
 num@co.com
+
+# ==== Add invalid contact ====
 2
 Valid Co
 123456
 0812345678
 c@valid.com
+
+# ==== Add missing contact ====
 2
 NoContact Co
 Empty Person
 
 
+# ==== Add duplicate (Alice again) ====
 2
 Rocket Co
 Alice
-0812345678
+0890000000
+alice@rocket.com
 
+# ==== Add phone-only ====
 2
-EmailOnly Co
-Mail Man
+Rocket Co
+Bob
+0811111111
 
-mail@only.com
+# ==== Add email-only ====
+2
+Rocket Co
+Charlie
+
+charlie@rocket.com
+
+# ==== List all users ====
 1
+
+# ==== Search user (Rocket) ====
 3
-rocket
+Rocket
+
+# ==== Update Charlie’s phone (valid) ====
 4
 Charlie
 A
 PhoneNumber
 0822222222
 y
+
+# ==== Update Alice with invalid phone ====
+4
+Alice
+A
+PhoneNumber
+12
+y
+
+# ==== Update Alice with invalid email ====
+4
+Alice
+A
+Email
+alicebad
+y
+
+# ==== Update Alice with wrong field ====
 4
 Alice
 A
 WrongField
 xxx
 y
+
+# ==== Update duplicate prevention ====
 4
-0812345678
+Bob
 A
-Email
-alice@rocket.com
+ContactPerson
+Alice
 y
+
+# ==== Update empty contact (remove phone/email) ====
 4
-0812345678
+Charlie
 A
 PhoneNumber
 
 y
+
+# ==== Delete Charlie ====
 5
 Charlie
 A
 y
+
+# ==== List inactive (Charlie should appear) ====
 7
+
+# ==== Restore Charlie ====
 8
 Charlie
 A
 y
-3
-Charlie
+
+# ==== Restore not found ====
+8
+NonExist
+A
+y
+
+# ==== Delete Alice cancel ====
 5
 Alice
 A
 n
+
+# ==== Delete Alice confirm ====
 5
 Alice
 A
 y
-7
-8
-Alice
-A
-y
+
+# ==== Multi delete ====
 2
 MultiDelCo
 Person1
@@ -118,11 +167,25 @@ m3@test.com
 MultiDelCo
 1,2
 y
-7
+
+# ==== Multi restore ====
 8
 MultiDelCo
 1
 y
+
+# ==== Edge case CSV escape (company has comma and quote) ====
+2
+"Quoted, Co"
+Mr "Quote"
+0819999999
+quoted@test.com
+
+# ==== Run Unit Test via menu ====
 9
+
+# ==== Run E2E Test via menu ====
 10
+
+# ==== Exit ====
 6
