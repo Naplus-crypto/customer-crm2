@@ -1,17 +1,16 @@
-CompanyName,ContactPerson,PhoneNumber,Email
-Tech Solutions,John Doe,555-1234,john@techsol.com
-Business Corp,Jane Smith,555-5678,jane@businesscorp.com
-Alpha Co,Alice Chan,081-234-5678,alice@alpha.co
-Beta Ltd,Bob Lee,082-345-6789,bob@beta.ltd
-Gamma PLC,Grace Kim,083-456-7890,grace@gammaplc.com
-Delta Co,Dan Brown,084-111-2222,dan@delta.co
-Epsilon Inc,Eva Green,085-222-3333,eva@epsilon.io
-Zeta Works,Zane Li,086-333-4444,zane@zeta.works
-Eta Group,Ethan Wu,087-444-5555,ethan@etagroup.org
-Theta Labs,Theresa May,088-555-6666,theresa@thetalabs.ai
-Iota Tech,Ivan Petrov,089-666-7777,ivan@iotatech.dev
-Kappa Services,Kara Danvers,090-777-8888,kara@kappa.services
-Lambda Partners,Liam Neeson,091-888-9999,liam@lambda.partners
-Mu Retail,Mia Wong,092-999-0000,mia@muret.ai
-Nu Media,Noah Park,093-000-1111,noah@numedia.tv
-Xi Foods,Xenia Zhou,094-111-2222,xenia@xifoods.co
+CompanyName,ContactPerson,PhoneNumber,Email,Status
+Tech Solutions,John Doe,0812345678,john@techsol.com,Active
+Business Corp,Jane Smith,0823456789,jane@businesscorp.com,Active
+Rocket Co,Rita Ray,0831112233,rita@rocket.io,Active
+Alpha Ltd,Mark Lee,0849876543,mark@alpha.com,Active
+Beta Systems,Sara Wong,0851239876,sara@betasys.com,Active
+Gamma Group,Tony Stark,0865554321,tony@gamma.com,Active
+Delta Tech,Steve Rogers,0878889999,steve@delta.io,Active
+Epsilon Inc,Natasha Roman,0881112222,natasha@epsilon.com,Active
+ZetaSoft,Bruce Wayne,0893334444,bruce@zetasoft.org,Active
+ThetaWorks,Clark Kent,0807778888,clark@theta.net,Active
+Iota Labs,Peter Parker,0812223333,peter@iotalabs.com,Active
+Kappa Ventures,Diana Prince,0829990000,diana@kappa.com,Active
+Lambda Services,Barry Allen,0834445555,barry@lambda.org,Active
+Mu Partners,Arthur Curry,0846667777,arthur@mu.io,Active
+Nu Digital,Victor Stone,0851010101,victor@nudigital.net,Active
