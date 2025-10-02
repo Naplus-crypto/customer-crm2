@@ -68,6 +68,3 @@ customer-crm/
 - คอลัมน์: `CompanyName,ContactPerson,PhoneNumber,Email,Status`
 - `Status` เป็น `Active` หรือ `Inactive`
 - ต้องมีข้อมูลอย่างน้อย **15 บรรทัด** (ดูตัวอย่างใน `customers.csv`)
-
----
-
