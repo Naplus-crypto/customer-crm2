@@ -71,20 +71,3 @@ customer-crm/
 
 ---
 
-## ตัวอย่างการใช้งาน CLI
-
-**เริ่มรันโปรแกรม จะเห็นเมนู:**
-```
-==== Customer CRM ===
-1) List all
-2) Add
-3) Search
-4) Update field
-5) Delete (soft)
-6) Exit
-7) List inactive
-8) Restore
-9) Run Unit Test
-10) Run E2E Test
-Choose [1-10]:
-```
