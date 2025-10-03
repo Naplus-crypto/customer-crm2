@@ -3,7 +3,7 @@
 #include <string.h>
 
 /* FIX include path: customer_manager.c อยู่ root เดียวกัน */
-#include "customer_manager.c"
+#include "../customer_manager.c"
 
 /* Helper: reset DB & bind test csv */
 static void reset_db(const char *path) {
