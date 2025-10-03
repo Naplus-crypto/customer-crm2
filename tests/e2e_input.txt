@@ -124,5 +124,4 @@ MultiDelCo
 1
 y
 9
-10
 6
