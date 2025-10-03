@@ -512,21 +512,18 @@ void restore_user(void){
 /* ==== tests hook (menu) ==== */
 void run_unit_test(void){
     puts("Running unit tests (menu, full)…");
-
-    /* คอมไพล์ test แล้วรัน โดยเก็บ stdout ไว้เผื่อ debug */
     int rc = system("gcc -std=c11 -O2 -Wall -Wextra -pedantic tests/test_unit.c -o tests/test_unit "
                     "&& ./tests/test_unit > tests/unit_output.txt");
     if (rc == 0) {
         puts("[Unit] All tests passed!");
     } else {
         puts("[Unit] FAILED – see tests/unit_output.txt");
-        /* พยายามโชว์บรรทัดท้าย ๆ ของผลลัพธ์ (ถ้ามี grep/tail จะอ่านง่ายขึ้น) */
         (void)system("command -v tail >/dev/null 2>&1 && tail -n 40 tests/unit_output.txt || true");
     }
 }
 
 void run_e2e_test(void){
-    /* กัน recursion: ถ้าอยู่ในโหมด E2E อยู่แล้ว (เช่น input script เผลอกด 10) ให้ข้าม */
+    /* กัน recursion: ถ้าอินพุตมาจาก e2e อยู่แล้ว (เช่นสคริปต์กดเมนู 10 ซ้อน) ให้ข้าม */
     if (getenv("CRM_E2E_RUNNING")) {
         puts("[E2E] Skip: already running inside E2E (prevent recursion).");
         return;
@@ -534,8 +531,8 @@ void run_e2e_test(void){
 
     puts("Running E2E test (menu, full coverage)…");
 
-    /* รันโปรแกรมตัวเองด้วยสคริปต์อินพุต แล้วเก็บผลลัพธ์ลงไฟล์
-       ตั้ง ENV=1 ไปยังโปรเซสลูก เพื่อกันไม่ให้ลูก-โปรเซสรัน E2E ซ้อน */
+    /* รันโปรแกรมหลักด้วยสคริปต์ แล้วเก็บผลลัพธ์ลงไฟล์
+       ตั้ง ENV=1 เพื่อบอกโปรเซสลูกว่าอย่ารัน E2E ซ้อน */
     int rc = system("CRM_E2E_RUNNING=1 ./crm < tests/e2e_input.txt > tests/e2e_output.txt");
     if (rc != 0) { puts("[E2E] FAIL: crm execution error"); return; }
 
@@ -550,7 +547,7 @@ void run_e2e_test(void){
     if (system("grep -q '× ต้องมีอย่างน้อย 1 ช่องทางติดต่อ' tests/e2e_output.txt") != 0) { puts("[E2E] Missing Contact FAIL"); return; }
     if (system("grep -q '× Duplicate:' tests/e2e_output.txt") != 0) { puts("[E2E] Duplicate Add FAIL"); return; }
 
-    /* --- SEARCH (case-insensitive list) --- */
+    /* --- SEARCH (case-insensitive) --- */
     if (system("grep -q 'Charlie' tests/e2e_output.txt") != 0) { puts("[E2E] Search/List FAIL"); return; }
     if (system("grep -qi 'rocket co' tests/e2e_output.txt") != 0) { puts("[E2E] Case-insensitive Search FAIL"); return; }
 
