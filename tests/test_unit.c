@@ -3,8 +3,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-/* รวมโค้ดโปรดักชันเข้ามา เพื่อเรียกใช้ฟังก์ชันตรง ๆ
-   ถ้าคุณแยกเป็น .h/.c เมื่อไหร่ ให้เปลี่ยนมา include header แทน */
 #include "../customer_manager.c"
 
 /* ---------- Helpers ---------- */
