@@ -2,11 +2,10 @@
 CC      := gcc
 CFLAGS  := -std=c11 -O2 -Wall -Wextra -pedantic
 
-# ---- Files ----
-SRC     := main.c customer_manager.c
+# ---- Binaries/Files ----
 BIN     := crm
+SRC     := main.c customer_manager.c
 
-# Unit/E2E tests
 UNIT_SRC := tests/test_unit.c
 UNIT_BIN := tests/test_unit
 
@@ -25,17 +24,19 @@ $(BIN): $(SRC)
 run: $(BIN)
 	./$(BIN)
 
-test: $(UNIT_BIN)
-	./$(UNIT_BIN)
-
+# -------- Unit test (คอมไพล์เป็นไบนารีแยก) --------
 $(UNIT_BIN): $(UNIT_SRC) customer_manager.c
 	$(CC) $(CFLAGS) -o $(UNIT_BIN) $(UNIT_SRC)
 
-e2e-bin: $(E2E_BIN) $(BIN)
-	./$(E2E_BIN)
+test: $(UNIT_BIN)
+	./$(UNIT_BIN)
 
+# -------- E2E (สองแบบ) --------
 $(E2E_BIN): $(E2E_SRC)
 	$(CC) $(CFLAGS) -o $(E2E_BIN) $(E2E_SRC)
+
+e2e-bin: $(E2E_BIN) $(BIN)
+	./$(E2E_BIN)
 
 e2e: $(BIN)
 	@echo "Running E2E (scripted input)..."
