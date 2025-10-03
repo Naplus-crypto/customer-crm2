@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "customer_manager.c"
+
 int main() {
     int rc = system("./crm < tests/e2e_input.txt > tests/e2e_output.txt");
     if (rc != 0) { puts("[E2E] FAIL: crm execution error"); return 1; }
