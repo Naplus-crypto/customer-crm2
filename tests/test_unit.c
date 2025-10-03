@@ -3,7 +3,7 @@
 #include <string.h>
 
 // รวมโค้ด customer_manager.c
-#include "../customer_manager.c"
+#include "./customer_manager.c"
 
 // ===== Helper =====
 static void reset_db(const char *path) {
