@@ -2,7 +2,7 @@
 CC      := gcc
 CFLAGS  := -std=c11 -O2 -Wall -Wextra -pedantic
 
-# ---- Binaries/Files ----
+# ---- Files ----
 BIN     := crm
 SRC     := main.c customer_manager.c
 
@@ -24,20 +24,22 @@ $(BIN): $(SRC)
 run: $(BIN)
 	./$(BIN)
 
-# -------- Unit test (คอมไพล์เป็นไบนารีแยก) --------
+# ---------- Unit test ----------
 $(UNIT_BIN): $(UNIT_SRC) customer_manager.c
-	$(CC) $(CFLAGS) -o $(UNIT_BIN) $(UNIT_SRC)
+	# ใส่ -I.. เผื่อมีการ include ไฟล์จากโฟลเดอร์แม่
+	$(CC) $(CFLAGS) -I.. -o $(UNIT_BIN) $(UNIT_SRC)
 
 test: $(UNIT_BIN)
 	./$(UNIT_BIN)
 
-# -------- E2E (สองแบบ) --------
+# ---------- E2E binary ----------
 $(E2E_BIN): $(E2E_SRC)
-	$(CC) $(CFLAGS) -o $(E2E_BIN) $(E2E_SRC)
+	$(CC) $(CFLAGS) -I.. -o $(E2E_BIN) $(E2E_SRC)
 
 e2e-bin: $(E2E_BIN) $(BIN)
 	./$(E2E_BIN)
 
+# ---------- E2E via input script ----------
 e2e: $(BIN)
 	@echo "Running E2E (scripted input)..."
 	@./$(BIN) < $(E2E_IN) > $(E2E_OUT) || true
@@ -48,7 +50,7 @@ e2e: $(BIN)
 	@echo "[E2E] Passed"
 
 clean:
-	rm -f $(BIN) $(UNIT_BIN) $(E2E_BIN) $(E2E_OUT)
+	rm -f $(BIN) $(UNIT_BIN) $(E2E_BIN) $(E2E_OUT) tests/mock_input.txt tests/test_unit.csv
 
 help:
 	@echo "make         # build app"
