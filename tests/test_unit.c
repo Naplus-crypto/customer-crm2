@@ -2,8 +2,8 @@
 #include <assert.h>
 #include <string.h>
 
-// รวมโค้ด customers_manager.c
-#include "customers_manager.c"
+// รวมโค้ด customer_manager.c
+#include "customer_manager.c"
 
 // ===== Helper =====
 static void reset_db(const char *path) {
