@@ -523,61 +523,17 @@ void run_unit_test(void){
 }
 
 void run_e2e_test(void){
-    /* กัน recursion: ถ้าอินพุตมาจาก e2e อยู่แล้ว (เช่นสคริปต์กดเมนู 10 ซ้อน) ให้ข้าม */
-    if (getenv("CRM_E2E_RUNNING")) {
-        puts("[E2E] Skip: already running inside E2E (prevent recursion).");
-        return;
-    }
+    puts("Running E2E test...");
+    // คอมไพล์ตัวทดสอบ (อาศัย path แบบรากโปรเจกต์)
+    int rc = system("gcc -std=c11 -O2 -Wall -Wextra -pedantic tests/test_e2e.c -o tests/test_e2e");
+    if(rc != 0){ puts("[E2E] build error"); return; }
 
-    puts("Running E2E test (menu, full coverage)…");
-
-    /* รันโปรแกรมหลักด้วยสคริปต์ แล้วเก็บผลลัพธ์ลงไฟล์
-       ตั้ง ENV=1 เพื่อบอกโปรเซสลูกว่าอย่ารัน E2E ซ้อน */
-    int rc = system("CRM_E2E_RUNNING=1 ./crm < tests/e2e_input.txt > tests/e2e_output.txt");
-    if (rc != 0) { puts("[E2E] FAIL: crm execution error"); return; }
-
-    /* ===== ตรวจครบเหมือน tests/test_e2e.c ===== */
-
-    /* --- ADD & Validation --- */
-    if (system("grep -q '✓ Added\\.' tests/e2e_output.txt") != 0) { puts("[E2E] Add FAIL"); return; }
-    if (system("grep -q '× Invalid phone' tests/e2e_output.txt") != 0) { puts("[E2E] Invalid Phone FAIL"); return; }
-    if (system("grep -q '× Invalid email' tests/e2e_output.txt") != 0) { puts("[E2E] Invalid Email FAIL"); return; }
-    if (system("grep -q '× Company ไม่ถูกต้อง' tests/e2e_output.txt") != 0) { puts("[E2E] Invalid Company FAIL"); return; }
-    if (system("grep -q '× Contact ไม่ถูกต้อง' tests/e2e_output.txt") != 0) { puts("[E2E] Invalid Contact FAIL"); return; }
-    if (system("grep -q '× ต้องมีอย่างน้อย 1 ช่องทางติดต่อ' tests/e2e_output.txt") != 0) { puts("[E2E] Missing Contact FAIL"); return; }
-    if (system("grep -q '× Duplicate:' tests/e2e_output.txt") != 0) { puts("[E2E] Duplicate Add FAIL"); return; }
-
-    /* --- SEARCH (case-insensitive) --- */
-    if (system("grep -q 'Charlie' tests/e2e_output.txt") != 0) { puts("[E2E] Search/List FAIL"); return; }
-    if (system("grep -qi 'rocket co' tests/e2e_output.txt") != 0) { puts("[E2E] Case-insensitive Search FAIL"); return; }
-
-    /* --- UPDATE paths --- */
-    if (system("grep -q '0822222222' tests/e2e_output.txt") != 0) { puts("[E2E] Update FAIL"); return; }
-    if (system("grep -q 'Unknown field' tests/e2e_output.txt") != 0) { puts("[E2E] Update Invalid Field FAIL"); return; }
-    if (system("grep -q 'Duplicate after update' tests/e2e_output.txt") != 0) { puts("[E2E] Update Duplicate Prevention FAIL"); return; }
-    if (system("grep -q 'Need at least one of Phone/Email' tests/e2e_output.txt") != 0) { puts("[E2E] Update Empty Contact FAIL"); return; }
-
-    /* --- DELETE & Inactive --- */
-    if (system("grep -q 'Marked Inactive' tests/e2e_output.txt") != 0) { puts("[E2E] Delete FAIL"); return; }
-    if (system("grep -q '\\[Inactive only\\]' tests/e2e_output.txt") != 0) { puts("[E2E] List Inactive FAIL"); return; }
-    if (system("grep -q 'No active records found\\.' tests/e2e_output.txt") != 0) { puts("[E2E] Delete NotFound FAIL"); return; }
-
-    /* --- RESTORE --- */
-    if (system("grep -q '✓ Restored' tests/e2e_output.txt") != 0) { puts("[E2E] Restore FAIL"); return; }
-
-    /* --- MULTI DELETE/RESTORE prompts --- */
-    if (system("grep -q 'Confirm delete selected record' tests/e2e_output.txt") != 0) { puts("[E2E] Multi Delete Prompt FAIL"); return; }
-    if (system("grep -q 'Confirm restore selected record' tests/e2e_output.txt") != 0) { puts("[E2E] Multi Restore Prompt FAIL"); return; }
-
-    /* --- TEST CALLS FROM MENU (Unit/E2E) --- */
-    if (system("grep -q 'Running unit tests' tests/e2e_output.txt") != 0) { puts("[E2E] Run Unit Test via Menu FAIL"); return; }
-    if (system("grep -q 'Running E2E test' tests/e2e_output.txt") != 0) { puts("[E2E] Run E2E Test via Menu FAIL"); return; }
-
-    /* --- EXIT --- */
-    if (system("grep -q 'Bye!' tests/e2e_output.txt") != 0) { puts("[E2E] Exit FAIL"); return; }
-
-    puts("[E2E] All tests passed!");
+    // รัน binary โดย cwd อยู่ที่รากโปรเจกต์
+    rc = system("./tests/test_e2e");
+    if(rc == 0) puts("[E2E] All tests passed!");
+    else        puts("[E2E] FAILED (see tests/e2e_output.txt)");
 }
+
 
 /* ==== menu ==== */
 void display_menu(void){
