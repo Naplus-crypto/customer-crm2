@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 int main(void) {
-    int rc = system("../crm < tests/e2e_input.txt > tests/e2e_output.txt");
+    int rc = system("./crm < tests/e2e_input.txt > tests/e2e_output.txt");
     if (rc != 0) { puts("[E2E] FAIL: crm execution error"); return 1; }
 
     /* ADD & validation messages */
