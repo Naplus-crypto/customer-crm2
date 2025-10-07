@@ -5,13 +5,8 @@
 จากโฟลเดอร์โปรเจค (`customer-crm/`) ให้รันคำสั่งนี้:
 
 ```bash
-gcc main.c customer_manager.c -std=c11 -O2 -Wall -Wextra -pedantic -o crm
+gcc main.c customer_manager.c -o crm
 ```
-
-คำอธิบาย option:
-- `-std=c11` → ใช้มาตรฐานภาษา C11
-- `-O2` → optimize ระดับปานกลาง (เร็วขึ้น แต่ยัง debug ได้)
-- `-Wall -Wextra -pedantic` → เปิด warning ช่วยตรวจโค้ด
 
 เมื่อสำเร็จ จะได้ไฟล์ executable ชื่อ **crm**
 
