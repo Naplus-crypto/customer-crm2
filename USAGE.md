@@ -162,7 +162,7 @@ Confirm restore ALL matched record(s)? [y/N]: y
 ```
 Choose [1-10]: 9
 Running unit tests...
-All unit tests passed.
+[Unit] All tests passed!
 ```
 
 ---
