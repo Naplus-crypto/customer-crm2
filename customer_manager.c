@@ -86,7 +86,7 @@ static int csv_parse_line(const char* line, char out[][MAX_STR], int max_fields)
     return nf;
 }
 
-/* ==== Validation (STRICT + practical) ==== */
+/* ==== Validation ==== */
 static bool valid_company(const char* s){
     int len=(int)strlen(s); if(len<2||len>80) return false;
     if(isspace((unsigned char)s[0])||isspace((unsigned char)s[len-1])) return false;
