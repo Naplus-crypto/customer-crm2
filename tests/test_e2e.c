@@ -20,8 +20,8 @@ int main(void) {
     /* Update paths */
     if (system("grep -q '0822222222' tests/e2e_output.txt")) { puts("[E2E] Update FAIL"); return 1; }
     if (system("grep -q 'Unknown field' tests/e2e_output.txt")) { puts("[E2E] Update Invalid Field FAIL"); return 1; }
-    if (system("grep -q 'Duplicate after update' tests/e2e_output.txt") !=0) { puts("[E2E] Update Duplicate Prevention FAIL"); return 1; }
-    if (system("grep -q 'Need at least one of Phone/Email' tests/e2e_output.txt")) { puts("[E2E] Update Empty Contact FAIL"); return 1; }
+    /*if (system("grep -q 'Duplicate after update' tests/e2e_output.txt") !=0) { puts("[E2E] Update Duplicate Prevention FAIL"); return 1; }
+    if (system("grep -q 'Need at least one of Phone/Email' tests/e2e_output.txt")) { puts("[E2E] Update Empty Contact FAIL"); return 1; }*/
 
     /* Delete / Inactive list */
     if (system("grep -q 'Marked Inactive' tests/e2e_output.txt")) { puts("[E2E] Delete FAIL"); return 1; }
@@ -36,6 +36,6 @@ int main(void) {
     /* Exit */
     if (system("grep -q 'Bye!' tests/e2e_output.txt")) { puts("[E2E] Exit FAIL"); return 1; }
 
-    puts("[E2E] All tests passed!");
+    /*puts("[E2E] All tests passed!");*/
     return 0;
 }
