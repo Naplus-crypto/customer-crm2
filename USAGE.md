@@ -162,10 +162,6 @@ Confirm restore ALL matched record(s)? [y/N]: y
 ```
 Choose [1-10]: 9
 Running unit tests...
-✓ Test add_user passed
-✓ Test search_user passed
-✓ Test edit_user passed
-✓ Test delete_user passed
 All unit tests passed.
 ```
 
@@ -175,9 +171,5 @@ All unit tests passed.
 ```
 Choose [1-10]: 10
 Running E2E test...
-[E2E] Add OK
-[E2E] Update OK
-[E2E] Delete OK
-[E2E] Exit OK
-[E2E] Passed
+[E2E] All tests passed.
 ```
