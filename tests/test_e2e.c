@@ -20,7 +20,7 @@ int main(void) {
     /* Update paths */
     if (system("grep -q '0822222222' tests/e2e_output.txt")) { puts("[E2E] Update FAIL"); return 1; }
     if (system("grep -q 'Unknown field' tests/e2e_output.txt")) { puts("[E2E] Update Invalid Field FAIL"); return 1; }
-    if (system("grep -q 'Duplicate after update' tests/e2e_output.txt")) { puts("[E2E] Update Duplicate Prevention FAIL"); return 1; }
+    if (system("grep -q 'Duplicate after update' tests/e2e_output.txt") !=0) { puts("[E2E] Update Duplicate Prevention FAIL"); return 1; }
     if (system("grep -q 'Need at least one of Phone/Email' tests/e2e_output.txt")) { puts("[E2E] Update Empty Contact FAIL"); return 1; }
 
     /* Delete / Inactive list */
