@@ -282,7 +282,7 @@ void search_user(void){
 /* ==== add / edit / delete / restore ==== */
 void add_user(void){
     char company[MAX_STR], contact[MAX_STR], phone[MAX_PHONE], email[MAX_STR];
-    puts("=== Add Customer (STRICT + Practical) ===");
+    puts("=== Add Customer ===");
     puts("กติกา:");
     puts(" • Company/Contact: 2–80 ตัว, ต้องมี ‘ตัวอักษร’ อย่างน้อย 1, อนุญาต . - / & ( ) ' , และเว้นวรรค; ห้ามขึ้นต้น/ลงท้ายด้วยเครื่องหมาย");
     puts(" • Phone: ตัวเลขล้วน 9–15 หลัก, เริ่มด้วย 0, prefix 02/03/06/08/09 (รองรับ +66 -> 0)");
