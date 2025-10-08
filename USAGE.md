@@ -171,5 +171,5 @@ Running unit tests...
 ```
 Choose [1-10]: 10
 Running E2E test...
-[E2E] All tests passed.
+[E2E] All tests passed!
 ```
