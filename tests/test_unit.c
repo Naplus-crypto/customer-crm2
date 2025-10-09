@@ -1,5 +1,5 @@
 // tests/test_unit.c
-// Unit tests (assert + printf) ครอบคลุมทุกฟังก์ชัน + boundary + extreme
+// Unit tests (assert + printf)
 // รันเดี่ยว:   gcc -std=c11 -O2 -Wall -Wextra -pedantic tests/test_unit.c -o tests/test_unit && ./tests/test_unit
 // รันผ่านเมนู: เลือกข้อ 9) Run Unit Test
 
